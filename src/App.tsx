@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Main from './pages/Main';
 import Chat from './pages/Chat';
 import GlobalStyle from './globals';
+
 function App() {
   return (
     <>

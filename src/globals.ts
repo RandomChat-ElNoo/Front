@@ -12,6 +12,7 @@ const GlobalStyle = createGlobalStyle`
   border:none;
   box-sizing: border-box;
   text-decoration: none;
+  font-family: Pretendard;
   }
 
   html, body {
