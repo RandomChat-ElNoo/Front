@@ -14,7 +14,7 @@ const Container = styled.div`
 
 const Notifications = styled.div`
   max-width: 96rem;
-  min-width: 46rem;
+  min-width: 19rem;
   width: 100%;
   height: 3rem;
   border-radius: 2rem;
