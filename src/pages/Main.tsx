@@ -1,6 +1,8 @@
-import { Button, ConfigProvider, Input } from 'antd';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Button, ConfigProvider, Input } from 'antd';
 import Loading from '../component/Loading';
+import AskModal from '../component/AskModal';
 
 const Background = styled.div`
   width: 100vw;
@@ -9,7 +11,7 @@ const Background = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
+
   background: linear-gradient(
       72deg,
       rgba(255, 255, 255, 0.01) 2%,
@@ -23,6 +25,7 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   padding: 0 2rem;
+  position: relative;
 `;
 
 const Banner = styled.div`
@@ -39,7 +42,32 @@ const Text = styled.div`
   text-align: center;
   font-size: 2.5rem;
   font-weight: 500;
-  line-height: 2.2rem;
+  line-height: 3rem;
+`;
+const FlexContainer = styled.div`
+  display: flex;
+  justify-content: end;
+`;
+const Ask = styled.button`
+  width: fit-content;
+  height: fit-content;
+  margin-top: 15rem;
+  background-color: rgba(0, 0, 0, 0);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.4rem;
+`;
+
+const ImgContainer = styled.div`
+  width: 5rem;
+  height: 5rem;
 `;
 
 const inputStyle = {
@@ -52,6 +80,10 @@ const inputStyle = {
 };
 
 export default function Main() {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [modal, setModal] = useState(false);
+  const [askInputValue, setAskInputValue] = useState('');
+
   const suffix = (
     <Button
       style={{
@@ -69,6 +101,27 @@ export default function Main() {
       채팅하러가기
     </Button>
   );
+
+  // function sendEmail() {
+  //   window.location.href =
+  //     'mailto:tofhdnsgksk@gmail.com?subject=Subject&body=Body';
+  // }
+
+  const handleModal = () => {
+    setModal(true);
+  };
+
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  console.log(askInputValue);
   return (
     <>
       <ConfigProvider
@@ -82,11 +135,31 @@ export default function Main() {
         }}
       >
         <Background>
+          <AskModal
+            setValue={setAskInputValue}
+            open={modal}
+            setter={setModal}
+            inputValue={askInputValue}
+          />
           <Container>
             <Banner>
-              <img alt="배너이미지" src="/Imgs/titleOfRC.svg" />
+              {windowWidth >= 420 ? (
+                <img alt="배너이미지" src="/Imgs/titleOfRC.svg" />
+              ) : (
+                <img alt="배너이미지" src="/Imgs/titleOfRCsmall.svg" />
+              )}
             </Banner>
-            <Text>VRChat 유저들을 위한 랜덤채팅</Text>
+            {windowWidth >= 420 ? (
+              <Text>VRChat 유저들을 위한 랜덤채팅</Text>
+            ) : (
+              <>
+                <Text>
+                  VRChat 유저들을 위한
+                  <br />
+                  랜덤채팅
+                </Text>
+              </>
+            )}
             <Input
               placeholder="사용하시는 아바타를 적어주세요 예) 마누카, 모에"
               showCount
@@ -94,6 +167,15 @@ export default function Main() {
               style={inputStyle}
               suffix={suffix}
             />
+            <FlexContainer>
+              <Ask onClick={handleModal}>
+                <ImgContainer>
+                  <img alt="문의하기" src="/Imgs/VRC_icon.svg" />
+                </ImgContainer>
+                {/* <p>피드백
+                  문의하기</p> */}
+              </Ask>
+            </FlexContainer>
           </Container>
           {/* <Loading clientCount={15} /> */}
         </Background>
