@@ -1,3 +1,4 @@
+import { ArrowRightOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -43,7 +44,7 @@ export default function ExitButton({ onClickFunc }: ExitButtonProps) {
       <Link to="/">
         <Container onClick={onClickFunc}>
           <Text>나가기</Text>
-          <img alt="나가기화살표" src="/Imgs/ArrowRight.svg" />
+          <ArrowRightOutlined style={{ fontSize: '1.5rem' }} />
         </Container>
       </Link>
     </>

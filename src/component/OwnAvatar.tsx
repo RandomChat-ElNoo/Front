@@ -6,13 +6,13 @@ const MainContainer = styled.div`
   gap: 4rem;
   padding: 0 4rem 2rem 4rem;
   @media (max-width: 520px) {
-    padding: 0 2rem 2rem 2rem;
-    gap: 2rem;
+    padding: 0 0.1rem 2rem 0.1rem;
+    gap: 0.1rem;
   }
 `;
 const Container = styled.div`
   max-width: 44rem;
-  min-width: 21rem;
+
   width: 100%;
   height: 8rem;
   display: flex;
@@ -21,6 +21,9 @@ const Container = styled.div`
   justify-content: center;
   border-radius: 2rem;
   background: rgba(255, 255, 255, 0.5);
+  @media (max-width: 520px) {
+    /* min-width: calc(20rem - 0.3rem); */
+  }
 `;
 
 const Text = styled.p`
