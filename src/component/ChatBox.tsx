@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
-const Container = styled.div<ContainerProps>`
+const Container = styled.div.withConfig({
+  shouldForwardProp: prop => ['isMine', 'children'].includes(prop),
+})<ContainerProps>`
   max-width: 48rem;
   width: max-content;
   min-height: 4rem;
@@ -15,7 +17,9 @@ const Container = styled.div<ContainerProps>`
   line-height: 2.2rem;
 `;
 
-const FlexBox = styled.div<ContainerProps>`
+const FlexBox = styled.div.withConfig({
+  shouldForwardProp: prop => ['isMine', 'children'].includes(prop),
+})<ContainerProps>`
   display: flex;
   justify-content: ${props => (props.isMine ? 'right' : 'left')};
 `;
