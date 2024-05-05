@@ -90,8 +90,9 @@ export default function Chat() {
   const [chattings, setChattings] = useState<(string | boolean)[][]>([]);
   const [avatar, setAvatar] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(2);
   const timeoutRef = useRef<number | undefined>(undefined);
+  const scrollRef = useRef<any>();
 
   const handleJoin = () => {
     socketJoin();
@@ -99,23 +100,17 @@ export default function Chat() {
 
   const handleExit = () => {
     socketExit();
-    localStorage.removeItem('avatar');
   };
 
   const handleEnter = () => {
-    const a = [...chattings, [chatInputValue, true]];
-    setChattings(a);
-    socketChat(chatInputValue);
+    if (chatInputValue.length > 0) {
+      const a = [...chattings, [chatInputValue, true]];
+      setChattings(a);
+      socketChat(chatInputValue);
+      window.scrollTo(0, document.body.scrollHeight);
+    }
   };
 
-  // const handleTyping = () => {
-  //   let timerId = setTimeout(()=>{
-  //     setIsTyping(false)
-  //   },4000)
-  //   if(!isTyping){
-  //     setIsTyping(true)
-  //   }
-  // };
   const startTimeout = () => {
     timeoutRef.current = window.setTimeout(() => {
       setIsTyping(false);
@@ -125,7 +120,7 @@ export default function Chat() {
   const handleRestart = () => {
     clearTimeout(timeoutRef.current);
     setIsTyping(true);
-    setCountdown(3);
+    setCountdown(2);
     startTimeout();
   };
 
@@ -148,6 +143,8 @@ export default function Chat() {
     const handleMessage = (msg: string) => {
       console.log(msg);
       setChattings(prevMsg => [...prevMsg, [msg, false]]);
+      setIsTyping(false);
+      window.scrollTo(0, document.body.scrollHeight);
     };
     const handleAction = (response: SocketIoAvaliableEventRecord['action']) => {
       console.log('액션', response.action, '데이터', response.data);
@@ -186,6 +183,10 @@ export default function Chat() {
     };
   }, []);
 
+  useEffect(() => {
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [chattings, isTyping]);
+  console.log(isTyping);
   return (
     <>
       <Background>
@@ -201,7 +202,7 @@ export default function Chat() {
                 : '??'
             }
           />
-          <Chattings>
+          <Chattings ref={scrollRef}>
             {connected ? <Notification type="connect" key="connect" /> : ''}
             {chattings.map((item: any, index: number) => (
               <>
@@ -221,6 +222,7 @@ export default function Chat() {
           </Chattings>
           <ChatInput
             onPressEnter={handleEnter}
+            setIsTyping={setIsTyping}
             InputValue={chatInputValue}
             setter={setChatInputValue}
           />

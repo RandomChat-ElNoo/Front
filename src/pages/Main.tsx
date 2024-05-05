@@ -131,8 +131,13 @@ export default function Main() {
   );
 
   useEffect(() => {
+    if (localStorage.getItem('avatar') !== null) {
+      const item = String(localStorage.getItem('avatar'));
+      setAvatarInputValue(item);
+    }
+
     window.addEventListener('resize', handleResize);
-    localStorage.removeItem('avatar');
+
     socketExit();
 
     return () => {
@@ -206,21 +211,20 @@ export default function Main() {
 // const action = ['join', 'exit', 'typing', 'avatar', 'count'];
 // "message"
 
-// 타이핑 컴포넌트 만들기
 // chat 페이지로 링크 바로 입력하면 메인 페이지로 reroute
 // 엔터눌렀을때 연결되도록
 
 /*
 1. 아바타 적고 버튼누르면
-(로컬스토리지에 아바타 저장/, 액션 join 보내고 로딩창 뜨면서 count 1초에 한번 보내고
+(로컬스토리지에 아바타 저장**, 액션 join 보내고 로딩창 뜨면서 count 1초에 한번 보내고**
 액션값 join이 들어오면 chat페이지로 이동하면서 avatar액션보내기)
-2. 채팅 칠때
+2. 채팅 칠때****
 (typing 액션 보내기, 엔터 치면 message로 인풋 보내기 그리고 채팅 객체에 .push )
-3. 상대가 칠때
-(typing 값이 들어오면 2초간 유지, 그 후 들어올때마다 타이머초기화)
-4. 나가기
+3. 상대가 칠때*****
+(typing 값이 들어오면 4초간 유지, 그 후 들어올때마다 타이머초기화)
+4. 나가기****
 (매인페이지로 나가고 액션에 exit 값 보내기)
-5. 상대가 나가면
+5. 상대가 나가고 재매칭 누르면
 (로딩창 띄우고 액션 join 보내고 로딩창 뜨면서 count 1초에 한번 보내고
 채팅 객체 리셋하고 avatar 액션보내기)
 */
