@@ -1,9 +1,21 @@
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import {
+  socket,
+  socketJoin,
+  socketExit,
+  socketCount,
+  socketChat,
+  socketAvatar,
+  SocketIoAvaliableEventRecord,
+} from '../utils/soket';
 import OwnAvatar from '../component/OwnAvatar';
 import ExitButton from '../component/ExitButton';
 import Notification from '../component/Notification';
 import ChatBox from '../component/ChatBox';
 import ChatInput from '../component/ChatInput';
+import Typing from '../component/Typing';
+import Loading from '../component/Loading';
 
 const Background = styled.div`
   width: 100vw;
@@ -41,111 +53,179 @@ const Chattings = styled.div`
   padding: 0 2rem 0 2rem;
   overflow-y: auto;
 `;
+
+type Action = 'join' | 'exit' | 'wait' | '';
+
+export function useInterval(callback: () => void, delay: number | null) {
+  const savedCallback = useRef(callback);
+
+  // Remember the latest callback if it changes.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  useEffect(() => {
+    // Don't schedule if no delay is specified.
+    // Note: 0 is a valid value for delay.
+    if (delay === null) {
+      return;
+    }
+
+    const id = setInterval(() => {
+      savedCallback.current();
+    }, delay);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [delay]);
+}
+
 export default function Chat() {
+  const [actionState, setActionState] = useState<Action>('');
+  const [clientCount, setClientCount] = useState<number | '  '>('  ');
+  const [chatInputValue, setChatInputValue] = useState<string>('');
+  const [connected, setConnected] = useState(false);
+  const [chattings, setChattings] = useState<(string | boolean)[][]>([]);
+  const [avatar, setAvatar] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [countdown, setCountdown] = useState(3);
+  const timeoutRef = useRef<number | undefined>(undefined);
+
+  const handleJoin = () => {
+    socketJoin();
+  };
+
+  const handleExit = () => {
+    socketExit();
+    localStorage.removeItem('avatar');
+  };
+
+  const handleEnter = () => {
+    const a = [...chattings, [chatInputValue, true]];
+    setChattings(a);
+    socketChat(chatInputValue);
+  };
+
+  // const handleTyping = () => {
+  //   let timerId = setTimeout(()=>{
+  //     setIsTyping(false)
+  //   },4000)
+  //   if(!isTyping){
+  //     setIsTyping(true)
+  //   }
+  // };
+  const startTimeout = () => {
+    timeoutRef.current = window.setTimeout(() => {
+      setIsTyping(false);
+    }, countdown * 1000);
+  };
+
+  const handleRestart = () => {
+    clearTimeout(timeoutRef.current);
+    setIsTyping(true);
+    setCountdown(3);
+    startTimeout();
+  };
+
+  useEffect(() => {
+    handleJoin();
+
+    let isCooldown = false;
+    let interval = -1;
+    const sendCountDealyed = () => {
+      if (isCooldown) {
+        return;
+      }
+      isCooldown = true;
+      interval = window.setTimeout(() => {
+        isCooldown = false;
+        socketCount();
+      }, 1000);
+    };
+
+    const handleMessage = (msg: string) => {
+      console.log(msg);
+      setChattings(prevMsg => [...prevMsg, [msg, false]]);
+    };
+    const handleAction = (response: SocketIoAvaliableEventRecord['action']) => {
+      console.log('액션', response.action, '데이터', response.data);
+
+      if (['join', 'exit', 'wait'].includes(response.action)) {
+        setActionState(response.action as Action);
+      }
+      switch (response.action) {
+        case 'join':
+          setConnected(true);
+          socketAvatar(localStorage.getItem('avatar'));
+          clearTimeout(interval);
+          break;
+        case 'exit':
+          break;
+        case 'wait':
+          sendCountDealyed();
+          break;
+        case 'count':
+          sendCountDealyed();
+          setClientCount(response.data);
+          break;
+        case 'avatar':
+          setAvatar(response.data);
+          break;
+        case 'typeing':
+          handleRestart();
+          break;
+      }
+    };
+    socket.on('action', handleAction);
+    socket.on('message', handleMessage);
+    return () => {
+      socket.off('action', handleAction);
+      socket.off('message', handleMessage);
+    };
+  }, []);
+
   return (
     <>
       <Background>
         <ChatContainer>
           <ExitFlex>
-            <ExitButton onClickFunc={() => {}} />
+            <ExitButton onClickFunc={handleExit} />
           </ExitFlex>
-          <OwnAvatar yourAvatar="일이삼사오육칠팔구십" myAvatar="키쿄" />
+          <OwnAvatar
+            yourAvatar={avatar ? avatar : '??'}
+            myAvatar={
+              localStorage.getItem('avatar')
+                ? localStorage.getItem('avatar')
+                : '??'
+            }
+          />
           <Chattings>
-            <Notification type="connect" />
-            <ChatBox content="안녕하세요" isMine={false} />
-            <ChatBox content="반가워요" isMine={true} />
-            <ChatBox content="짧은글 몇개 적어보기" isMine={false} />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={false}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-            <ChatBox
-              content="당신이 맡은 새로운 프로젝트는 혁신적인 아이디어를 담고 있습니다. 이 프로젝트는 사람들의 삶을 더 나아지게 만들고, 사회에 긍정적인 영향을 끼치는 것을 목표로 합니다.
-            "
-              isMine={true}
-            />
-
-            <Notification type="disConnect" />
+            {connected ? <Notification type="connect" key="connect" /> : ''}
+            {chattings.map((item: any, index: number) => (
+              <>
+                <ChatBox
+                  content={item[0]}
+                  isMine={item[1]}
+                  key={`채팅-${index}`}
+                />
+              </>
+            ))}
+            {isTyping ? <Typing /> : ''}
+            {actionState === 'exit' ? (
+              <Notification type="disConnect" key="disconnect" />
+            ) : (
+              ''
+            )}
           </Chattings>
-          <ChatInput />
+          <ChatInput
+            onPressEnter={handleEnter}
+            InputValue={chatInputValue}
+            setter={setChatInputValue}
+          />
         </ChatContainer>
+        {actionState === 'wait' ? <Loading clientCount={clientCount} /> : ''}
       </Background>
     </>
   );

@@ -1,6 +1,7 @@
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Button, ConfigProvider, Input } from 'antd';
 import styled from 'styled-components';
+import { socketTyping } from '../utils/soket';
 
 const InputContainer = styled.div`
   padding: 1rem 2rem 2rem 2rem;
@@ -14,8 +15,28 @@ const inputStyle = {
   padding: '0.5rem 0.5rem 0.5rem 2rem',
   borderRadius: '2rem',
 };
+interface ChatInputProps {
+  onPressEnter: () => void;
+  InputValue: string;
+  setter: (value: string) => void;
+}
 
-export default function ChatInput() {
+export default function ChatInput({
+  onPressEnter,
+  InputValue,
+  setter,
+}: ChatInputProps) {
+  const handleInputValue = (e: any) => {
+    setter(e.target.value);
+    socketTyping();
+  };
+
+  const handleSendMessage = () => {
+    onPressEnter();
+    setter('');
+    console.log('메세지 보내기');
+  };
+
   const suffix = (
     <Button
       style={{
@@ -28,7 +49,7 @@ export default function ChatInput() {
         alignItems: 'center',
         justifyContent: 'center',
       }}
-      onClick={() => {}}
+      onClick={handleSendMessage}
     >
       <CaretRightOutlined style={{ fontSize: '2rem' }} />
     </Button>
@@ -45,6 +66,9 @@ export default function ChatInput() {
       >
         <InputContainer>
           <Input
+            onPressEnter={handleSendMessage}
+            value={InputValue}
+            onChange={handleInputValue}
             showCount
             allowClear
             maxLength={300}

@@ -35,7 +35,7 @@ const Client = styled.div`
 `;
 
 interface LoadingProps {
-  clientCount: number;
+  clientCount: number | '  ';
 }
 
 export default function Loading({ clientCount }: LoadingProps) {

@@ -35,7 +35,7 @@ const Text = styled.p`
 `;
 interface OwnAvatarProps {
   yourAvatar: string;
-  myAvatar: string;
+  myAvatar: string | null;
 }
 export default function OwnAvatar({ yourAvatar, myAvatar }: OwnAvatarProps) {
   return (
