@@ -58,8 +58,9 @@ const ReMatching = styled.button`
 
 interface NotificationProps {
   type: 'connect' | 'disConnect';
+  rematching?: () => void;
 }
-export default function Notification({ type }: NotificationProps) {
+export default function Notification({ type, rematching }: NotificationProps) {
   return (
     <>
       <Container>
@@ -71,7 +72,7 @@ export default function Notification({ type }: NotificationProps) {
         {type === 'connect' ? (
           ''
         ) : (
-          <ReMatching>
+          <ReMatching onClick={rematching}>
             재매칭 <img alt="재매칭" src="/Imgs/rematching.svg" />
           </ReMatching>
         )}

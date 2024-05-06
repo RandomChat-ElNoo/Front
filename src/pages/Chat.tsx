@@ -96,6 +96,7 @@ export default function Chat() {
 
   const handleJoin = () => {
     socketJoin();
+    setConnected(false);
   };
 
   const handleExit = () => {
@@ -215,7 +216,11 @@ export default function Chat() {
             ))}
             {isTyping ? <Typing /> : ''}
             {actionState === 'exit' ? (
-              <Notification type="disConnect" key="disconnect" />
+              <Notification
+                type="disConnect"
+                rematching={handleJoin}
+                key="disconnect"
+              />
             ) : (
               ''
             )}
