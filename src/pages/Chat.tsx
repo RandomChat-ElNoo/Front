@@ -59,15 +59,11 @@ type Action = 'join' | 'exit' | 'wait' | '';
 export function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback);
 
-  // Remember the latest callback if it changes.
   useEffect(() => {
     savedCallback.current = callback;
   }, [callback]);
 
-  // Set up the interval.
   useEffect(() => {
-    // Don't schedule if no delay is specified.
-    // Note: 0 is a valid value for delay.
     if (delay === null) {
       return;
     }
@@ -97,6 +93,7 @@ export default function Chat() {
   const handleJoin = () => {
     socketJoin();
     setConnected(false);
+    setChattings([]);
   };
 
   const handleExit = () => {
@@ -138,7 +135,7 @@ export default function Chat() {
       interval = window.setTimeout(() => {
         isCooldown = false;
         socketCount();
-      }, 1000);
+      }, 1500);
     };
 
     const handleMessage = (msg: string) => {
@@ -187,7 +184,7 @@ export default function Chat() {
   useEffect(() => {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [chattings, isTyping]);
-  console.log(isTyping);
+
   return (
     <>
       <Background>
