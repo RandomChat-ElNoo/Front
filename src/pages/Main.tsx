@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Button, ConfigProvider, Input } from 'antd';
+import { Button, ConfigProvider, Input, notification } from 'antd';
 import AskModal from '../component/AskModal';
 import { useNavigate } from 'react-router-dom';
 import { socketExit } from '../utils/soket';
@@ -81,12 +81,22 @@ const inputStyle = {
   fontWeight: '500',
 };
 
+type NotificationType = 'success' | 'info' | 'warning' | 'error';
+
 export default function Main() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [modal, setModal] = useState(false);
   const [askInputValue, setAskInputValue] = useState('');
   const [avatarInputValue, setAvatarInputValue] = useState('');
+  const [api, contextHolder] = notification.useNotification();
   const navigator = useNavigate();
+
+  const openNotificationWithIcon = (type: NotificationType, error?: string) => {
+    api[type]({
+      message: type === 'success' ? '보내기 완료!' : '보내기 실패',
+      description: type === 'success' ? '' : error,
+    });
+  };
 
   const handleAvatarInput = (e: any) => {
     setAvatarInputValue(e.target.value);
@@ -163,7 +173,9 @@ export default function Main() {
             open={modal}
             setter={setModal}
             inputValue={askInputValue}
+            openNotification={openNotificationWithIcon}
           />
+          {contextHolder}
           <Container>
             <Banner>
               {windowWidth >= 420 ? (
@@ -198,8 +210,6 @@ export default function Main() {
                 <ImgContainer>
                   <img alt="문의하기" src="/Imgs/VRC_icon.svg" />
                 </ImgContainer>
-                {/* <p>피드백
-                  문의하기</p> */}
               </Ask>
             </FlexContainer>
           </Container>
