@@ -14,12 +14,10 @@ export type SocketIoAvaliableEventRecord = {
 export const socket = io('http://3.36.66.17', { transports: ['websocket'] });
 
 export const socketJoin = () => {
-  console.log('조인');
   socket.emit('action', { action: 'join', data: undefined });
 };
 
 export const socketExit = () => {
-  console.log('엑시트');
   socket.emit('action', { action: 'exit', data: undefined });
 };
 export const socketCount = () => {
@@ -28,7 +26,6 @@ export const socketCount = () => {
 
 export const socketAvatar = (avatar: string | null) => {
   socket.emit('action', { action: 'avatar', data: avatar });
-  console.log('아바타 보내기 완료');
 };
 
 export const socketTyping = () => {

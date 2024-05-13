@@ -40,12 +40,10 @@ export default function AskModal({
         })
         .then(
           () => {
-            console.log('SUCCESS!');
             openNotification('success');
             handleClose();
           },
           error => {
-            console.log('FAILED...', error.text);
             openNotification('error', error.text);
             handleClose();
           },

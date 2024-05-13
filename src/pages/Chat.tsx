@@ -152,16 +152,12 @@ export default function Chat() {
     };
 
     const handleMessage = (msg: string) => {
-      console.log(22222);
-      console.log(msg);
       setChattings(prevMsg => [...prevMsg, [msg, false]]);
       setIsTyping(false);
       window.scrollTo(0, document.body.scrollHeight);
     };
 
     const handleAction = (response: SocketIoAvaliableEventRecord['action']) => {
-      console.log('액션', response.action, '데이터', response.data);
-
       if (['join', 'exit', 'wait'].includes(response.action)) {
         setActionState(response.action as Action);
       }

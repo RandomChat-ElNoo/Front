@@ -108,7 +108,6 @@ export default function Main() {
 
   const handleStartChatting = () => {
     handleAvatarSave();
-    console.log(localStorage.getItem('avatar'));
     navigator('/chat');
   };
 
@@ -218,25 +217,3 @@ export default function Main() {
     </>
   );
 }
-
-// const action = ['join', 'exit', 'typing', 'avatar', 'count'];
-// "message"
-
-// 5분안에 안잡히면  다시잡기 모달창 띄우기
-// ( 5분은 어떻게 잴지 exit 보내고 모달창 나오면 될듯)
-
-/*
-1. 아바타 적고 버튼누르면****
-2. 채팅 칠때****
-(typing 액션 보내기, 엔터 치면 message로 인풋 보내기 그리고 채팅 객체에 .push )
-3. 상대가 칠때*****
-(typing 값이 들어오면 4초간 유지, 그 후 들어올때마다 타이머초기화)
-4. 나가기****
-(매인페이지로 나가고 액션에 exit 값 보내기)
-5. 상대가 나가고 재매칭 누르면
-(로딩창 띄우고 액션 join 보내고 로딩창 뜨면서 count 1초에 한번 보내고
-채팅 객체 리셋하고 avatar 액션보내기)
-*/
-
-//https://velog.io/@fejigu/Socket.IO-client
-//https://velog.io/@fromjjong/React-socket.io%EB%A1%9C-%EB%A7%8C%EB%93%9C%EB%8A%94-%EC%8B%A4%EC%8B%9C%EA%B0%84-%EA%B8%B0%EB%8A%A5-1-%EC%A0%95%EC%9D%98-namespace-%EA%B8%B0%EB%B3%B8-%EC%84%B8%ED%8C%85

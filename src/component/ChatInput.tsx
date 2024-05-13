@@ -36,7 +36,6 @@ export default function ChatInput({
   const handleSendMessage = () => {
     onPressEnter();
     setter('');
-    console.log('메세지 보내기');
   };
 
   const suffix = (
