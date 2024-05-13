@@ -1,16 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
-import styled from 'styled-components';
 
 const okButtonStyle = {
   background: 'rgba(91, 33, 255, 1)',
 };
 
-const description = styled.p`
-  font-size: 1.5rem;
-`;
-interface RematchingModalProps {}
-export default function RematchingModal({}: RematchingModalProps) {
+export default function RematchingModal() {
   const navigator = useNavigate();
 
   const onOkFunc = () => {
