@@ -111,6 +111,19 @@ export default function Chat() {
     }
   };
 
+  const handleStartTypingTimeout = () => {
+    timeoutRef.current = window.setTimeout(() => {
+      setIsTyping(false);
+    }, countdown * 1000);
+  };
+
+  const handleRestart = () => {
+    clearTimeout(timeoutRef.current);
+    setIsTyping(true);
+    setCountdown(2);
+    handleStartTypingTimeout();
+  };
+
   const handleStartMatchingTimeout = () => {
     matchingTimeoutRef.current = window.setTimeout(() => {
       socketExit();
@@ -119,12 +132,6 @@ export default function Chat() {
 
   const handleClearMatchingTimeout = () => {
     clearTimeout(matchingTimeoutRef.current);
-  };
-
-  const handleStartTypingTimeout = () => {
-    timeoutRef.current = window.setTimeout(() => {
-      setIsTyping(false);
-    }, countdown * 1000);
   };
 
   useEffect(() => {
@@ -141,13 +148,6 @@ export default function Chat() {
         isCooldown = false;
         socketCount();
       }, 1500);
-    };
-
-    const handleRestart = () => {
-      clearTimeout(timeoutRef.current);
-      setIsTyping(true);
-      setCountdown(2);
-      handleStartTypingTimeout();
     };
 
     const handleMessage = (msg: string) => {
@@ -192,6 +192,7 @@ export default function Chat() {
       socket.off('action', handleAction);
       socket.off('message', handleMessage);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
