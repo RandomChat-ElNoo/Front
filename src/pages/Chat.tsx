@@ -127,13 +127,6 @@ export default function Chat() {
     }, countdown * 1000);
   };
 
-  const handleRestart = () => {
-    clearTimeout(timeoutRef.current);
-    setIsTyping(true);
-    setCountdown(2);
-    handleStartTypingTimeout();
-  };
-
   useEffect(() => {
     handleJoin();
     console.log(11);
@@ -148,6 +141,13 @@ export default function Chat() {
         isCooldown = false;
         socketCount();
       }, 1500);
+    };
+
+    const handleRestart = () => {
+      clearTimeout(timeoutRef.current);
+      setIsTyping(true);
+      setCountdown(2);
+      handleStartTypingTimeout();
     };
 
     const handleMessage = (msg: string) => {
