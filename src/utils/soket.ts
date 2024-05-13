@@ -11,7 +11,7 @@ export type SocketIoAvaliableEventRecord = {
   message: string;
 };
 
-export const socket = io('http://3.36.66.17', { transports: ['websocket'] });
+export const socket = io('http://api.vtalk.be', { transports: ['websocket'] });
 
 export const socketJoin = () => {
   socket.emit('action', { action: 'join', data: undefined });
