@@ -121,12 +121,6 @@ export default function Chat() {
     clearTimeout(matchingTimeoutRef.current);
   };
 
-  const handleStartTypingTimeout = () => {
-    timeoutRef.current = window.setTimeout(() => {
-      setIsTyping(false);
-    }, countdown * 1000);
-  };
-
   useEffect(() => {
     handleJoin();
     console.log(11);
@@ -141,6 +135,12 @@ export default function Chat() {
         isCooldown = false;
         socketCount();
       }, 1500);
+    };
+
+    const handleStartTypingTimeout = () => {
+      timeoutRef.current = window.setTimeout(() => {
+        setIsTyping(false);
+      }, countdown * 1000);
     };
 
     const handleRestart = () => {
@@ -192,6 +192,7 @@ export default function Chat() {
       socket.off('action', handleAction);
       socket.off('message', handleMessage);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
