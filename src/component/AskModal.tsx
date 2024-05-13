@@ -3,11 +3,14 @@ import emailjs from '@emailjs/browser';
 import { Modal } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 
+type NotificationType = 'success' | 'info' | 'warning' | 'error';
+
 interface AskModalProps {
   inputValue: string;
   setValue: Dispatch<SetStateAction<string>>;
   open: boolean;
   setter: Dispatch<SetStateAction<boolean>>;
+  openNotification: (type: NotificationType, error?: string) => void;
 }
 
 export default function AskModal({
@@ -15,6 +18,7 @@ export default function AskModal({
   setValue,
   open,
   setter,
+  openNotification,
 }: AskModalProps) {
   const form = useRef<HTMLFormElement>(null);
 
@@ -29,22 +33,22 @@ export default function AskModal({
 
   const sendEmail = (e: any) => {
     e.preventDefault();
-
-    emailjs
-      .sendForm('service_6xoddmk', 'template_h00hlf8', form.current || '', {
-        publicKey: 'poTKJKaLXSv3zbRpI',
-      })
-      .then(
-        () => {
-          console.log('SUCCESS!');
-
-          handleClose();
-        },
-        error => {
-          console.log('FAILED...', error.text);
-          handleClose();
-        },
-      );
+    if (inputValue) {
+      emailjs
+        .sendForm('service_6xoddmk', 'template_h00hlf8', form.current || '', {
+          publicKey: 'poTKJKaLXSv3zbRpI',
+        })
+        .then(
+          () => {
+            openNotification('success');
+            handleClose();
+          },
+          error => {
+            openNotification('error', error.text);
+            handleClose();
+          },
+        );
+    }
   };
 
   return (

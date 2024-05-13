@@ -1,8 +1,8 @@
+import type { Dispatch, SetStateAction } from 'react';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Button, ConfigProvider, Input } from 'antd';
 import styled from 'styled-components';
 import { socketTyping } from '../utils/soket';
-
 const InputContainer = styled.div`
   padding: 1rem 2rem 2rem 2rem;
 `;
@@ -17,12 +17,14 @@ const inputStyle = {
 };
 interface ChatInputProps {
   onPressEnter: () => void;
+  setIsTyping: Dispatch<SetStateAction<boolean>>;
   InputValue: string;
   setter: (value: string) => void;
 }
 
 export default function ChatInput({
   onPressEnter,
+  setIsTyping,
   InputValue,
   setter,
 }: ChatInputProps) {
@@ -34,7 +36,6 @@ export default function ChatInput({
   const handleSendMessage = () => {
     onPressEnter();
     setter('');
-    console.log('메세지 보내기');
   };
 
   const suffix = (

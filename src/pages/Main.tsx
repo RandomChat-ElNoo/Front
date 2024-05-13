@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Button, ConfigProvider, Input } from 'antd';
+import { Button, ConfigProvider, Input, notification } from 'antd';
 import AskModal from '../component/AskModal';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { socketExit } from '../utils/soket';
 
 const Background = styled.div`
@@ -81,11 +81,22 @@ const inputStyle = {
   fontWeight: '500',
 };
 
+type NotificationType = 'success' | 'info' | 'warning' | 'error';
+
 export default function Main() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [modal, setModal] = useState(false);
   const [askInputValue, setAskInputValue] = useState('');
   const [avatarInputValue, setAvatarInputValue] = useState('');
+  const [api, contextHolder] = notification.useNotification();
+  const navigator = useNavigate();
+
+  const openNotificationWithIcon = (type: NotificationType, error?: string) => {
+    api[type]({
+      message: type === 'success' ? '보내기 완료!' : '보내기 실패',
+      description: type === 'success' ? '' : error,
+    });
+  };
 
   const handleAvatarInput = (e: any) => {
     setAvatarInputValue(e.target.value);
@@ -97,7 +108,7 @@ export default function Main() {
 
   const handleStartChatting = () => {
     handleAvatarSave();
-    console.log(localStorage.getItem('avatar'));
+    navigator('/chat');
   };
 
   const handleModal = () => {
@@ -110,29 +121,32 @@ export default function Main() {
 
   const suffix = (
     <>
-      <Link to={'/chat'}>
-        <Button
-          style={{
-            height: '3.4rem',
-            padding: '1rem',
-            borderRadius: '2rem',
-            background: 'rgba(91, 33, 255, 1)',
-            display: 'Flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#e8e8e8',
-          }}
-          onClick={handleStartChatting}
-        >
-          채팅하러가기
-        </Button>
-      </Link>
+      <Button
+        style={{
+          height: '3.4rem',
+          padding: '1rem',
+          borderRadius: '2rem',
+          background: 'rgba(91, 33, 255, 1)',
+          display: 'Flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#e8e8e8',
+        }}
+        onClick={handleStartChatting}
+      >
+        채팅하러가기
+      </Button>
     </>
   );
 
   useEffect(() => {
+    if (localStorage.getItem('avatar') !== null) {
+      const item = String(localStorage.getItem('avatar'));
+      setAvatarInputValue(item);
+    }
+
     window.addEventListener('resize', handleResize);
-    localStorage.removeItem('avatar');
+
     socketExit();
 
     return () => {
@@ -158,7 +172,9 @@ export default function Main() {
             open={modal}
             setter={setModal}
             inputValue={askInputValue}
+            openNotification={openNotificationWithIcon}
           />
+          {contextHolder}
           <Container>
             <Banner>
               {windowWidth >= 420 ? (
@@ -180,6 +196,7 @@ export default function Main() {
             )}
             <Input
               placeholder="사용하시는 아바타를 적어주세요 예) 마누카, 모에"
+              onPressEnter={handleStartChatting}
               showCount
               onChange={handleAvatarInput}
               value={avatarInputValue}
@@ -192,8 +209,6 @@ export default function Main() {
                 <ImgContainer>
                   <img alt="문의하기" src="/Imgs/VRC_icon.svg" />
                 </ImgContainer>
-                {/* <p>피드백
-                  문의하기</p> */}
               </Ask>
             </FlexContainer>
           </Container>
@@ -202,27 +217,3 @@ export default function Main() {
     </>
   );
 }
-
-// const action = ['join', 'exit', 'typing', 'avatar', 'count'];
-// "message"
-
-// 타이핑 컴포넌트 만들기
-// chat 페이지로 링크 바로 입력하면 메인 페이지로 reroute
-// 엔터눌렀을때 연결되도록
-
-/*
-1. 아바타 적고 버튼누르면
-(로컬스토리지에 아바타 저장/, 액션 join 보내고 로딩창 뜨면서 count 1초에 한번 보내고
-액션값 join이 들어오면 chat페이지로 이동하면서 avatar액션보내기)
-2. 채팅 칠때
-(typing 액션 보내기, 엔터 치면 message로 인풋 보내기 그리고 채팅 객체에 .push )
-3. 상대가 칠때
-(typing 값이 들어오면 2초간 유지, 그 후 들어올때마다 타이머초기화)
-4. 나가기
-(매인페이지로 나가고 액션에 exit 값 보내기)
-5. 상대가 나가면
-(로딩창 띄우고 액션 join 보내고 로딩창 뜨면서 count 1초에 한번 보내고
-채팅 객체 리셋하고 avatar 액션보내기)
-*/
-//https://velog.io/@fejigu/Socket.IO-client
-//https://velog.io/@fromjjong/React-socket.io%EB%A1%9C-%EB%A7%8C%EB%93%9C%EB%8A%94-%EC%8B%A4%EC%8B%9C%EA%B0%84-%EA%B8%B0%EB%8A%A5-1-%EC%A0%95%EC%9D%98-namespace-%EA%B8%B0%EB%B3%B8-%EC%84%B8%ED%8C%85

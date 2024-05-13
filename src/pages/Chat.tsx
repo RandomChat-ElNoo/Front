@@ -16,6 +16,7 @@ import ChatBox from '../component/ChatBox';
 import ChatInput from '../component/ChatInput';
 import Typing from '../component/Typing';
 import Loading from '../component/Loading';
+import RematchingModal from '../component/RematchingModal';
 
 const Background = styled.div`
   width: 100vw;
@@ -59,15 +60,11 @@ type Action = 'join' | 'exit' | 'wait' | '';
 export function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback);
 
-  // Remember the latest callback if it changes.
   useEffect(() => {
     savedCallback.current = callback;
   }, [callback]);
 
-  // Set up the interval.
   useEffect(() => {
-    // Don't schedule if no delay is specified.
-    // Note: 0 is a valid value for delay.
     if (delay === null) {
       return;
     }
@@ -83,40 +80,49 @@ export function useInterval(callback: () => void, delay: number | null) {
 }
 
 export default function Chat() {
+  const [connected, setConnected] = useState(false);
+  const [rematchModal, setRematchModal] = useState(false);
   const [actionState, setActionState] = useState<Action>('');
   const [clientCount, setClientCount] = useState<number | '  '>('  ');
-  const [chatInputValue, setChatInputValue] = useState<string>('');
-  const [connected, setConnected] = useState(false);
-  const [chattings, setChattings] = useState<(string | boolean)[][]>([]);
   const [avatar, setAvatar] = useState('');
+  const [chatInputValue, setChatInputValue] = useState<string>('');
+  const [chattings, setChattings] = useState<(string | boolean)[][]>([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(2);
   const timeoutRef = useRef<number | undefined>(undefined);
+  const matchingTimeoutRef = useRef<number | undefined>(undefined);
+  const scrollRef = useRef<any>();
 
   const handleJoin = () => {
     socketJoin();
+    setConnected(false);
+    setChattings([]);
   };
 
   const handleExit = () => {
     socketExit();
-    localStorage.removeItem('avatar');
   };
 
   const handleEnter = () => {
-    const a = [...chattings, [chatInputValue, true]];
-    setChattings(a);
-    socketChat(chatInputValue);
+    if (chatInputValue.length > 0) {
+      const a = [...chattings, [chatInputValue, true]];
+      setChattings(a);
+      socketChat(chatInputValue);
+      window.scrollTo(0, document.body.scrollHeight);
+    }
   };
 
-  // const handleTyping = () => {
-  //   let timerId = setTimeout(()=>{
-  //     setIsTyping(false)
-  //   },4000)
-  //   if(!isTyping){
-  //     setIsTyping(true)
-  //   }
-  // };
-  const startTimeout = () => {
+  const handleStartMatchingTimeout = () => {
+    matchingTimeoutRef.current = window.setTimeout(() => {
+      socketExit();
+    }, 60 * 1000);
+  };
+
+  const handleClearMatchingTimeout = () => {
+    clearTimeout(matchingTimeoutRef.current);
+  };
+
+  const handleStartTypingTimeout = () => {
     timeoutRef.current = window.setTimeout(() => {
       setIsTyping(false);
     }, countdown * 1000);
@@ -125,8 +131,8 @@ export default function Chat() {
   const handleRestart = () => {
     clearTimeout(timeoutRef.current);
     setIsTyping(true);
-    setCountdown(3);
-    startTimeout();
+    setCountdown(2);
+    handleStartTypingTimeout();
   };
 
   useEffect(() => {
@@ -142,16 +148,16 @@ export default function Chat() {
       interval = window.setTimeout(() => {
         isCooldown = false;
         socketCount();
-      }, 1000);
+      }, 1500);
     };
 
     const handleMessage = (msg: string) => {
-      console.log(msg);
       setChattings(prevMsg => [...prevMsg, [msg, false]]);
+      setIsTyping(false);
+      window.scrollTo(0, document.body.scrollHeight);
     };
-    const handleAction = (response: SocketIoAvaliableEventRecord['action']) => {
-      console.log('액션', response.action, '데이터', response.data);
 
+    const handleAction = (response: SocketIoAvaliableEventRecord['action']) => {
       if (['join', 'exit', 'wait'].includes(response.action)) {
         setActionState(response.action as Action);
       }
@@ -160,15 +166,18 @@ export default function Chat() {
           setConnected(true);
           socketAvatar(localStorage.getItem('avatar'));
           clearTimeout(interval);
+          handleClearMatchingTimeout();
           break;
         case 'exit':
+          clearTimeout(interval);
           break;
         case 'wait':
           sendCountDealyed();
+          handleStartMatchingTimeout();
           break;
         case 'count':
           sendCountDealyed();
-          setClientCount(response.data);
+          setClientCount(response.data - 1);
           break;
         case 'avatar':
           setAvatar(response.data);
@@ -186,6 +195,10 @@ export default function Chat() {
     };
   }, []);
 
+  useEffect(() => {
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [chattings, isTyping]);
+
   return (
     <>
       <Background>
@@ -201,7 +214,7 @@ export default function Chat() {
                 : '??'
             }
           />
-          <Chattings>
+          <Chattings ref={scrollRef}>
             {connected ? <Notification type="connect" key="connect" /> : ''}
             {chattings.map((item: any, index: number) => (
               <>
@@ -214,18 +227,34 @@ export default function Chat() {
             ))}
             {isTyping ? <Typing /> : ''}
             {actionState === 'exit' ? (
-              <Notification type="disConnect" key="disconnect" />
+              <Notification
+                type="disConnect"
+                rematching={handleJoin}
+                key="disconnect"
+              />
             ) : (
               ''
             )}
           </Chattings>
           <ChatInput
             onPressEnter={handleEnter}
+            setIsTyping={setIsTyping}
             InputValue={chatInputValue}
             setter={setChatInputValue}
           />
         </ChatContainer>
-        {actionState === 'wait' ? <Loading clientCount={clientCount} /> : ''}
+        {actionState === 'wait' ? (
+          <Loading clientCount={clientCount} />
+        ) : actionState === 'join' ? (
+          ''
+        ) : actionState === 'exit' ? (
+          <>
+            <Loading clientCount={clientCount} />
+            <RematchingModal />
+          </>
+        ) : (
+          ''
+        )}
       </Background>
     </>
   );
