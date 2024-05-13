@@ -16,6 +16,7 @@ import ChatBox from '../component/ChatBox';
 import ChatInput from '../component/ChatInput';
 import Typing from '../component/Typing';
 import Loading from '../component/Loading';
+import RematchingModal from '../component/RematchingModal';
 
 const Background = styled.div`
   width: 100vw;
@@ -79,15 +80,17 @@ export function useInterval(callback: () => void, delay: number | null) {
 }
 
 export default function Chat() {
+  const [connected, setConnected] = useState(false);
+  const [rematchModal, setRematchModal] = useState(false);
   const [actionState, setActionState] = useState<Action>('');
   const [clientCount, setClientCount] = useState<number | '  '>('  ');
-  const [chatInputValue, setChatInputValue] = useState<string>('');
-  const [connected, setConnected] = useState(false);
-  const [chattings, setChattings] = useState<(string | boolean)[][]>([]);
   const [avatar, setAvatar] = useState('');
+  const [chatInputValue, setChatInputValue] = useState<string>('');
+  const [chattings, setChattings] = useState<(string | boolean)[][]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [countdown, setCountdown] = useState(2);
   const timeoutRef = useRef<number | undefined>(undefined);
+  const matchingTimeoutRef = useRef<number | undefined>(undefined);
   const scrollRef = useRef<any>();
 
   const handleJoin = () => {
@@ -109,7 +112,17 @@ export default function Chat() {
     }
   };
 
-  const startTimeout = () => {
+  const handleStartMatchingTimeout = () => {
+    matchingTimeoutRef.current = window.setTimeout(() => {
+      socketExit();
+    }, 60 * 1000);
+  };
+
+  const handleClearMatchingTimeout = () => {
+    clearTimeout(matchingTimeoutRef.current);
+  };
+
+  const handleStartTypingTimeout = () => {
     timeoutRef.current = window.setTimeout(() => {
       setIsTyping(false);
     }, countdown * 1000);
@@ -119,7 +132,7 @@ export default function Chat() {
     clearTimeout(timeoutRef.current);
     setIsTyping(true);
     setCountdown(2);
-    startTimeout();
+    handleStartTypingTimeout();
   };
 
   useEffect(() => {
@@ -139,11 +152,13 @@ export default function Chat() {
     };
 
     const handleMessage = (msg: string) => {
+      console.log(22222);
       console.log(msg);
       setChattings(prevMsg => [...prevMsg, [msg, false]]);
       setIsTyping(false);
       window.scrollTo(0, document.body.scrollHeight);
     };
+
     const handleAction = (response: SocketIoAvaliableEventRecord['action']) => {
       console.log('액션', response.action, '데이터', response.data);
 
@@ -155,15 +170,18 @@ export default function Chat() {
           setConnected(true);
           socketAvatar(localStorage.getItem('avatar'));
           clearTimeout(interval);
+          handleClearMatchingTimeout();
           break;
         case 'exit':
+          clearTimeout(interval);
           break;
         case 'wait':
           sendCountDealyed();
+          handleStartMatchingTimeout();
           break;
         case 'count':
           sendCountDealyed();
-          setClientCount(response.data);
+          setClientCount(response.data - 1);
           break;
         case 'avatar':
           setAvatar(response.data);
@@ -229,7 +247,18 @@ export default function Chat() {
             setter={setChatInputValue}
           />
         </ChatContainer>
-        {actionState === 'wait' ? <Loading clientCount={clientCount} /> : ''}
+        {actionState === 'wait' ? (
+          <Loading clientCount={clientCount} />
+        ) : actionState === 'join' ? (
+          ''
+        ) : actionState === 'exit' ? (
+          <>
+            <Loading clientCount={clientCount} />
+            <RematchingModal />
+          </>
+        ) : (
+          ''
+        )}
       </Background>
     </>
   );
