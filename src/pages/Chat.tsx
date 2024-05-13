@@ -81,7 +81,6 @@ export function useInterval(callback: () => void, delay: number | null) {
 
 export default function Chat() {
   const [connected, setConnected] = useState(false);
-  const [rematchModal, setRematchModal] = useState(false);
   const [actionState, setActionState] = useState<Action>('');
   const [clientCount, setClientCount] = useState<number | '  '>('  ');
   const [avatar, setAvatar] = useState('');
@@ -137,7 +136,7 @@ export default function Chat() {
 
   useEffect(() => {
     handleJoin();
-
+    console.log(11);
     let isCooldown = false;
     let interval = -1;
     const sendCountDealyed = () => {
