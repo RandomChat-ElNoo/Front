@@ -17,6 +17,7 @@ import ChatInput from '../component/ChatInput';
 import Typing from '../component/Typing';
 import Loading from '../component/Loading';
 import RematchingModal from '../component/RematchingModal';
+import usePrevious from '../utils/usePrevAction';
 
 const Background = styled.div`
   width: 100vw;
@@ -88,9 +89,13 @@ export default function Chat() {
   const [chattings, setChattings] = useState<(string | boolean)[][]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [countdown, setCountdown] = useState(2);
+  const [isRematchModal, setIsRematchingModal] = useState(false);
+  const [isMatching, setIsMatching] = useState(true);
+
   const timeoutRef = useRef<number | undefined>(undefined);
   const matchingTimeoutRef = useRef<number | undefined>(undefined);
   const scrollRef = useRef<any>();
+  const prevAct = usePrevious(actionState);
 
   const handleJoin = () => {
     socketJoin();
@@ -126,6 +131,7 @@ export default function Chat() {
 
   const handleStartMatchingTimeout = () => {
     matchingTimeoutRef.current = window.setTimeout(() => {
+      setIsRematchingModal(true);
       socketExit();
     }, 60 * 1000);
   };
@@ -136,7 +142,7 @@ export default function Chat() {
 
   useEffect(() => {
     handleJoin();
-    console.log(11);
+
     let isCooldown = false;
     let interval = -1;
     const sendCountDealyed = () => {
@@ -163,6 +169,7 @@ export default function Chat() {
       switch (response.action) {
         case 'join':
           setConnected(true);
+          setIsMatching(false);
           socketAvatar(localStorage.getItem('avatar'));
           clearTimeout(interval);
           handleClearMatchingTimeout();
@@ -171,6 +178,7 @@ export default function Chat() {
           clearTimeout(interval);
           break;
         case 'wait':
+          setIsMatching(true);
           sendCountDealyed();
           handleStartMatchingTimeout();
           break;
@@ -194,6 +202,12 @@ export default function Chat() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (prevAct === 'wait' && actionState === 'exit') {
+      setIsRematchingModal(true);
+    }
+  }, [actionState, prevAct]);
 
   useEffect(() => {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -243,18 +257,8 @@ export default function Chat() {
             setter={setChatInputValue}
           />
         </ChatContainer>
-        {actionState === 'wait' ? (
-          <Loading clientCount={clientCount} />
-        ) : actionState === 'join' ? (
-          ''
-        ) : actionState === 'exit' ? (
-          <>
-            <Loading clientCount={clientCount} />
-            <RematchingModal />
-          </>
-        ) : (
-          ''
-        )}
+        {isMatching ? <Loading clientCount={clientCount} /> : ''}
+        <RematchingModal open={isRematchModal} setter={setIsRematchingModal} />
       </Background>
     </>
   );

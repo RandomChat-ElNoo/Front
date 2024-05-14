@@ -1,18 +1,29 @@
+import { Dispatch, SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
+import { socketJoin } from '../utils/soket';
 
 const okButtonStyle = {
   background: 'rgba(91, 33, 255, 1)',
 };
+interface RematchingModalProps {
+  open: boolean;
+  setter: Dispatch<SetStateAction<boolean>>;
+}
 
-export default function RematchingModal() {
+export default function RematchingModal({
+  open,
+  setter,
+}: RematchingModalProps) {
   const navigator = useNavigate();
 
   const onOkFunc = () => {
-    window.location.reload();
+    setter(false);
+    socketJoin();
   };
 
   const onCancelFunc = () => {
+    setter(false);
     navigator('/');
   };
 
@@ -23,7 +34,7 @@ export default function RematchingModal() {
         width={265}
         closable={false}
         maskClosable={false}
-        open
+        open={open}
         okText="재매칭!"
         onOk={onOkFunc}
         okButtonProps={okButtonStyle}
