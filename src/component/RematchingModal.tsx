@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
 import { socketJoin } from '../utils/soket';
 
-const okButtonStyle = {
-  background: 'rgba(91, 33, 255, 1)',
-};
 interface RematchingModalProps {
   open: boolean;
   setter: Dispatch<SetStateAction<boolean>>;
@@ -37,7 +34,9 @@ export default function RematchingModal({
         open={open}
         okText="재매칭!"
         onOk={onOkFunc}
-        okButtonProps={okButtonStyle}
+        okButtonProps={{
+          style: { backgroundColor: 'rgb(91, 33, 255)', color: 'white' },
+        }}
         cancelText="메인으로 돌아가기"
         onCancel={onCancelFunc}
       >
