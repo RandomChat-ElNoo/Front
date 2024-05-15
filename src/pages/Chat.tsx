@@ -87,10 +87,11 @@ export default function Chat() {
   const [avatar, setAvatar] = useState('');
   const [chatInputValue, setChatInputValue] = useState<string>('');
   const [chattings, setChattings] = useState<(string | boolean)[][]>([]);
-  const [isTyping, setIsTyping] = useState(false);
   const [countdown, setCountdown] = useState(2);
+  const [isTyping, setIsTyping] = useState(false);
   const [isRematchModal, setIsRematchingModal] = useState(false);
   const [isMatching, setIsMatching] = useState(true);
+  const [isInputDisable, setIsInputDisable] = useState(true);
 
   const timeoutRef = useRef<number | undefined>(undefined);
   const matchingTimeoutRef = useRef<number | undefined>(undefined);
@@ -157,9 +158,11 @@ export default function Chat() {
     };
 
     const handleMessage = (msg: string) => {
-      setChattings(prevMsg => [...prevMsg, [msg, false]]);
-      setIsTyping(false);
-      window.scrollTo(0, document.body.scrollHeight);
+      if (msg !== 'Unable to send message, not joined.') {
+        setChattings(prevMsg => [...prevMsg, [msg, false]]);
+        setIsTyping(false);
+        window.scrollTo(0, document.body.scrollHeight);
+      }
     };
 
     const handleAction = (response: SocketIoAvaliableEventRecord['action']) => {
@@ -173,9 +176,13 @@ export default function Chat() {
           socketAvatar(localStorage.getItem('avatar'));
           clearTimeout(interval);
           handleClearMatchingTimeout();
+          setIsInputDisable(false);
           break;
         case 'exit':
           clearTimeout(interval);
+          setChatInputValue('');
+          setIsInputDisable(true);
+          window.scrollTo(0, document.body.scrollHeight);
           break;
         case 'wait':
           setIsMatching(true);
@@ -212,7 +219,7 @@ export default function Chat() {
   useEffect(() => {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [chattings, isTyping]);
-
+  console.log(chattings);
   return (
     <>
       <Background>
@@ -252,9 +259,9 @@ export default function Chat() {
           </Chattings>
           <ChatInput
             onPressEnter={handleEnter}
-            setIsTyping={setIsTyping}
             InputValue={chatInputValue}
-            setter={setChatInputValue}
+            chatInputSetter={setChatInputValue}
+            disabled={isInputDisable}
           />
         </ChatContainer>
         {isMatching ? <Loading clientCount={clientCount} /> : ''}

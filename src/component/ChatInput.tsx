@@ -17,25 +17,26 @@ const inputStyle = {
 };
 interface ChatInputProps {
   onPressEnter: () => void;
-  setIsTyping: Dispatch<SetStateAction<boolean>>;
+
   InputValue: string;
-  setter: (value: string) => void;
+  chatInputSetter: (value: string) => void;
+  disabled: boolean;
 }
 
 export default function ChatInput({
   onPressEnter,
-  setIsTyping,
   InputValue,
-  setter,
+  chatInputSetter,
+  disabled,
 }: ChatInputProps) {
   const handleInputValue = (e: any) => {
-    setter(e.target.value);
+    chatInputSetter(e.target.value);
     socketTyping();
   };
 
   const handleSendMessage = () => {
     onPressEnter();
-    setter('');
+    chatInputSetter('');
   };
 
   const suffix = (
@@ -51,6 +52,7 @@ export default function ChatInput({
         justifyContent: 'center',
       }}
       onClick={handleSendMessage}
+      disabled={disabled}
     >
       <CaretRightOutlined style={{ fontSize: '2rem' }} />
     </Button>
@@ -75,6 +77,7 @@ export default function ChatInput({
             maxLength={300}
             suffix={suffix}
             style={inputStyle}
+            disabled={disabled}
           />
         </InputContainer>
       </ConfigProvider>
