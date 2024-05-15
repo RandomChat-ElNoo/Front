@@ -219,7 +219,7 @@ export default function Chat() {
   useEffect(() => {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [chattings, isTyping]);
-  console.log(chattings);
+
   return (
     <>
       <Background>
