@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from 'react';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Button, ConfigProvider, Input } from 'antd';
 import styled from 'styled-components';
