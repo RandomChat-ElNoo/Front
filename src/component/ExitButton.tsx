@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const Container = styled.button`
   display: flex;
-  width: 13rem;
+  width: 14rem;
   height: 4rem;
   padding: 0rem 2rem 0 2rem;
   justify-content: center;
