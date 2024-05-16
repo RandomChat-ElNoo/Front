@@ -40,14 +40,6 @@ const Text = styled.div`
   line-height: 3rem;
 `;
 
-const Text2 = styled.div`
-  margin-bottom: 4rem;
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 500;
-  line-height: 3rem;
-`;
-
 const FlexContainer = styled.div`
   display: flex;
   justify-content: end;
@@ -209,10 +201,6 @@ export default function Main() {
               style={inputStyle}
               suffix={suffix}
             />
-            <br />
-            <Text2>
-              공지 : 오늘 새벽에 대화중 잠시 연결이 끊길수도 있습니다!
-            </Text2>
             <FlexContainer>
               <Ask onClick={handleModal}>
                 <ImgContainer>
