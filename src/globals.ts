@@ -12,21 +12,32 @@ const GlobalStyle = createGlobalStyle`
   border:none;
   box-sizing: border-box;
   text-decoration: none;
-  font-family: Pretendard;
+  font-family: Pretendard Variable;
   }
 
   html, body {
     font-size: 62.5%;
-    height: 100%;
-    height: 100vh;
+
     background: linear-gradient(
       72deg,
       rgba(255, 255, 255, 0.01) 2%,
       rgba(0, 102, 255, 0.7) 100%
     ),
     #e2a5ff;
+
+    background-repeat: no-repeat;   
     background-size: cover;
   }
+
+  html{
+  height:100%;
+  width:100%;
+}
+body{
+  min-height:100%;
+  min-width: 100%;
+}
+  
   ul, ol {
     list-style: none;
   }

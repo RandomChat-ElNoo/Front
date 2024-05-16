@@ -9,7 +9,7 @@ const inputStyle = {
   width: '100%',
   height: '4rem',
   fontSize: '1.6rem',
-  fontFamily: 'Pretendard',
+  fontFamily: 'Pretendard Variable',
   fontWeight: 500,
   padding: '0.5rem 0.5rem 0.5rem 2rem',
   borderRadius: '2rem',
@@ -20,7 +20,7 @@ interface ChatInputProps {
   chatInputSetter: (value: string) => void;
   disabled: boolean;
 }
-
+let isCompositionEnded = true;
 export default function ChatInput({
   onPressEnter,
   InputValue,
@@ -33,8 +33,11 @@ export default function ChatInput({
   };
 
   const handleSendMessage = () => {
-    onPressEnter();
-    chatInputSetter('');
+    if (isCompositionEnded) {
+      onPressEnter();
+      chatInputSetter('');
+    }
+    isCompositionEnded = true;
   };
 
   const suffix = (
@@ -67,6 +70,12 @@ export default function ChatInput({
       >
         <InputContainer>
           <Input
+            onCompositionStart={() => {
+              isCompositionEnded = false;
+            }}
+            onCompositionEnd={() => {
+              isCompositionEnded = true;
+            }}
             onPressEnter={handleSendMessage}
             value={InputValue}
             onChange={handleInputValue}

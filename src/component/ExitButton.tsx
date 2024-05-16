@@ -32,7 +32,7 @@ const Text = styled.p`
   font-size: 2rem;
   font-weight: 500;
   line-height: 3rem;
-  font-family: Pretendard;
+  font-family: Pretendard Variable;
 `;
 interface ExitButtonProps {
   onClickFunc: () => void;
