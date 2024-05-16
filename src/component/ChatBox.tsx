@@ -15,6 +15,8 @@ const Container = styled.div.withConfig({
   font-size: 1.6rem;
   font-weight: 500;
   line-height: 2.2rem;
+  word-wrap: break-word;
+  word-break: break-all;
 `;
 
 const FlexBox = styled.div.withConfig({
