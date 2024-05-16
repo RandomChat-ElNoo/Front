@@ -12,6 +12,10 @@ const Background = styled.div`
 
   background: rgba(255, 255, 255, 0.9);
   position: absolute;
+
+  @media (max-width: 420px) {
+    padding-top: 9rem;
+  }
 `;
 
 const TextFlex = styled.div`
