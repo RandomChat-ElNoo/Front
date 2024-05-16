@@ -9,17 +9,11 @@ const Background = styled.div`
   width: 100vw;
   height: 100%;
   position: relative;
+  background-size: cover;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  background: linear-gradient(
-      72deg,
-      rgba(255, 255, 255, 0.01) 2%,
-      rgba(0, 102, 255, 0.7) 100%
-    ),
-    #e2a5ff;
 `;
 
 const Container = styled.div`
@@ -37,6 +31,9 @@ const Banner = styled.div`
   border-bottom: 0.4rem solid #000;
   display: flex;
   justify-content: center;
+  @media (max-width: 420px) {
+    padding: 7rem 0 1.7rem 0;
+  }
 `;
 
 const Text = styled.div`
@@ -65,6 +62,9 @@ const Ask = styled.button`
   font-size: 1.5rem;
   font-weight: 500;
   line-height: 1.4rem;
+  @media (max-width: 420px) {
+    margin-top: 5rem;
+  }
 `;
 
 const ImgContainer = styled.div`
