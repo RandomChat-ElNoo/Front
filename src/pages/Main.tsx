@@ -6,11 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { socketExit } from '../utils/soket';
 
 const Background = styled.div`
-  width: 100vw;
-  height: 100%;
   position: relative;
-  background-size: cover;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,6 +39,15 @@ const Text = styled.div`
   font-weight: 500;
   line-height: 3rem;
 `;
+
+const Text2 = styled.div`
+  margin-bottom: 4rem;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 3rem;
+`;
+
 const FlexContainer = styled.div`
   display: flex;
   justify-content: end;
@@ -77,7 +82,7 @@ const inputStyle = {
   height: '4rem',
   padding: '0 0.4rem 0 2rem',
   borderRadius: '2rem',
-  fontFamily: 'Pretendard',
+  fontFamily: 'Pretendard Variable',
   fontWeight: '500',
 };
 
@@ -161,7 +166,7 @@ export default function Main() {
           components: {
             Input: {
               inputFontSize: 15,
-              fontFamily: 'Pretendard',
+              fontFamily: 'Pretendard Variable',
             },
           },
         }}
@@ -204,6 +209,10 @@ export default function Main() {
               style={inputStyle}
               suffix={suffix}
             />
+            <br />
+            <Text2>
+              공지 : 오늘 새벽에 대화중 잠시 연결이 끊길수도 있습니다!
+            </Text2>
             <FlexContainer>
               <Ask onClick={handleModal}>
                 <ImgContainer>

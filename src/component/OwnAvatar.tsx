@@ -30,7 +30,7 @@ const Text = styled.p`
   text-align: center;
   font-size: 2rem;
   font-weight: 500;
-  font-family: Pretendard;
+  font-family: Pretendard Variable;
   line-height: 3rem;
 `;
 interface OwnAvatarProps {

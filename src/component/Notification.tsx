@@ -24,7 +24,7 @@ const Notifications = styled.div`
   font-size: 1.5rem;
   font-weight: 500;
   line-height: 3rem;
-  font-family: Pretendard;
+  font-family: Pretendard Variable;
 `;
 
 const ReMatching = styled.button`
@@ -46,7 +46,7 @@ const ReMatching = styled.button`
   font-size: 1.5rem;
   font-weight: 500;
   line-height: 3rem;
-  font-family: Pretendard;
+  font-family: Pretendard Variable;
 
   &:hover {
     background: rgba(255, 255, 255, 0.8);
