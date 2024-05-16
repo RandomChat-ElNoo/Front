@@ -20,19 +20,13 @@ import RematchingModal from '../component/RematchingModal';
 import usePrevious from '../utils/usePrevAction';
 
 const Background = styled.div`
-  width: 100vw;
   height: 100%;
+  height: 100vh;
+  background-size: cover;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  background: linear-gradient(
-      72deg,
-      rgba(255, 255, 255, 0.01) 2%,
-      rgba(0, 102, 255, 0.7) 100%
-    ),
-    #e2a5ff;
 `;
 
 const ChatContainer = styled.div`
@@ -182,7 +176,6 @@ export default function Chat() {
           clearTimeout(interval);
           setChatInputValue('');
           setIsInputDisable(true);
-          window.scrollTo(0, document.body.scrollHeight);
           break;
         case 'wait':
           setIsMatching(true);
