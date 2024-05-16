@@ -16,7 +16,6 @@ const inputStyle = {
 };
 interface ChatInputProps {
   onPressEnter: () => void;
-
   InputValue: string;
   chatInputSetter: (value: string) => void;
   disabled: boolean;
