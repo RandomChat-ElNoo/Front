@@ -39,12 +39,12 @@ interface OwnAvatarProps {
 }
 export default function OwnAvatar({ yourAvatar, myAvatar }: OwnAvatarProps) {
   return (
-    <MainContainer>
-      <Container>
+    <MainContainer key={'AvatarContainer'}>
+      <Container key={'yourAvatar'}>
         <Text>상대</Text>
         <Text>{yourAvatar}</Text>
       </Container>
-      <Container>
+      <Container key={'ownAvatar'}>
         <Text>나</Text>
         <Text>{myAvatar}</Text>
       </Container>
