@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Button, ConfigProvider, Input, notification } from 'antd';
+import { ConfigProvider, notification } from 'antd';
 import AskModal from '../component/AskModal';
 import { useNavigate } from 'react-router-dom';
 import { socketExit } from '../utils/soket';
+import AvatarSelect from '../component/AvatarSelect';
 
 const Background = styled.div`
   position: relative;
@@ -69,14 +70,14 @@ const ImgContainer = styled.div`
   height: 5rem;
 `;
 
-const inputStyle = {
-  width: '100%',
-  height: '4rem',
-  padding: '0 0.4rem 0 2rem',
-  borderRadius: '2rem',
-  fontFamily: 'Pretendard Variable',
-  fontWeight: '500',
-};
+// const inputStyle = {
+//   width: '100%',
+//   height: '4rem',
+//   padding: '0 0.4rem 0 2rem',
+//   borderRadius: '2rem',
+//   fontFamily: 'Pretendard',
+//   fontWeight: '500',
+// };
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
@@ -84,7 +85,9 @@ export default function Main() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [modal, setModal] = useState(false);
   const [askInputValue, setAskInputValue] = useState('');
-  const [avatarInputValue, setAvatarInputValue] = useState('');
+  const [avatarInputValue, setAvatarInputValue] = useState<string | undefined>(
+    '',
+  );
   const [api, contextHolder] = notification.useNotification();
   const navigator = useNavigate();
 
@@ -95,12 +98,16 @@ export default function Main() {
     });
   };
 
-  const handleAvatarInput = (e: any) => {
-    setAvatarInputValue(e.target.value);
-  };
+  // const handleAvatarInput = (e: any) => {
+  //   setAvatarInputValue(e.target.value);
+  // };
 
   const handleAvatarSave = () => {
-    localStorage.setItem('avatar', avatarInputValue);
+    if (avatarInputValue !== undefined) {
+      localStorage.setItem('avatar', avatarInputValue);
+    } else {
+      localStorage.setItem('avatar', '기타');
+    }
   };
 
   const handleStartChatting = () => {
@@ -116,30 +123,40 @@ export default function Main() {
     setWindowWidth(window.innerWidth);
   };
 
-  const suffix = (
-    <>
-      <Button
-        style={{
-          height: '3.4rem',
-          padding: '1rem',
-          borderRadius: '2rem',
-          background: 'rgba(91, 33, 255, 1)',
-          display: 'Flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#e8e8e8',
-        }}
-        onClick={handleStartChatting}
-      >
-        채팅하러가기
-      </Button>
-    </>
-  );
+  // const suffix = (
+  //   <>
+  //     <Button
+  //       style={{
+  //         height: '3.4rem',
+  //         padding: '1rem',
+  //         borderRadius: '2rem',
+  //         background: 'rgba(91, 33, 255, 1)',
+  //         display: 'Flex',
+  //         alignItems: 'center',
+  //         justifyContent: 'center',
+  //         color: '#e8e8e8',
+  //       }}
+  //       onClick={handleStartChatting}
+  //     >
+  //       채팅하러가기
+  //     </Button>
+  //   </>
+  // );
 
   useEffect(() => {
-    if (localStorage.getItem('avatar') !== null) {
+    if (localStorage.getItem('isLastest') === null) {
+      localStorage.removeItem('avatar');
+      localStorage.setItem('isLastest', 'true');
+    }
+
+    if (
+      localStorage.getItem('avatar') !== null &&
+      localStorage.getItem('avatar') !== undefined
+    ) {
       const item = String(localStorage.getItem('avatar'));
       setAvatarInputValue(item);
+    } else {
+      setAvatarInputValue(undefined);
     }
 
     window.addEventListener('resize', handleResize);
@@ -191,7 +208,7 @@ export default function Main() {
                 </Text>
               </>
             )}
-            <Input
+            {/* <Input
               placeholder="사용하시는 아바타를 적어주세요 예) 마누카, 모에"
               onPressEnter={handleStartChatting}
               showCount
@@ -200,6 +217,11 @@ export default function Main() {
               maxLength={10}
               style={inputStyle}
               suffix={suffix}
+            /> */}
+            <AvatarSelect
+              onClickFunc={handleStartChatting}
+              AvatarValue={avatarInputValue}
+              setAvatarValue={setAvatarInputValue}
             />
             <FlexContainer>
               <Ask onClick={handleModal}>
