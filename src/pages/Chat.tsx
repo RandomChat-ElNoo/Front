@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+// import { createBrowserHistory } from 'history';
 import styled from 'styled-components';
 import {
   socket,
@@ -17,7 +18,8 @@ import ChatInput from '../component/ChatInput';
 import Typing from '../component/Typing';
 import Loading from '../component/Loading';
 import RematchingModal from '../component/RematchingModal';
-import usePrevious from '../utils/usePrevAction';
+import usePrevious from '../hooks/usePrevAction';
+import usePreventRefresh from '../hooks/usePreventRefresh';
 
 const Background = styled.div`
   height: 100%;
@@ -91,6 +93,9 @@ export default function Chat() {
   const matchingTimeoutRef = useRef<number | undefined>(undefined);
   const scrollRef = useRef<any>();
   const prevAct = usePrevious(actionState);
+  // const history = createBrowserHistory();
+
+  usePreventRefresh();
 
   const handleJoin = () => {
     socketJoin();
@@ -207,6 +212,9 @@ export default function Chat() {
     if (prevAct === 'wait' && actionState === 'exit') {
       setIsRematchingModal(true);
     }
+    if (prevAct === 'join' && actionState === 'exit') {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
   }, [actionState, prevAct]);
 
   useEffect(() => {
@@ -225,8 +233,9 @@ export default function Chat() {
             myAvatar={
               localStorage.getItem('avatar')
                 ? localStorage.getItem('avatar')
-                : '??'
+                : '기타'
             }
+            key={'Avatars'}
           />
           <Chattings ref={scrollRef}>
             {connected ? <Notification type="connect" key="connect" /> : ''}
