@@ -1,8 +1,10 @@
 const avatarList = [
   { value: '그루스' },
+  { value: '나유' },
   { value: '라임' },
   { value: '러스크' },
   { value: '루나릿트' },
+  { value: '리어엘리스' },
   { value: '리파' },
   { value: '린도' },
   { value: '마누카' },
@@ -12,6 +14,7 @@ const avatarList = [
   { value: '마키' },
   { value: '마후유' },
   { value: '메리노' },
+  { value: '메이윤' },
   { value: '모에' },
   { value: '모피라' },
   { value: '미나 호시' },
@@ -32,6 +35,7 @@ const avatarList = [
   { value: '씨엘' },
   { value: '안리' },
   { value: '우사사키' },
+  { value: '우콘' },
   { value: '울페리아' },
   { value: '유우코' },
   { value: '이메리스' },
@@ -42,6 +46,7 @@ const avatarList = [
   { value: '쿄코' },
   { value: '키쿄' },
   { value: '티엔' },
+  { value: '하카' },
   { value: '기타' },
 ];
 
