@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import ReplaceUrl from './ReplaceUrl';
 
 const Container = styled.div.withConfig({
   shouldForwardProp: prop => ['isMine', 'children'].includes(prop),
@@ -36,7 +37,9 @@ export default function ChatBox({ content, isMine }: ChatProps) {
   return (
     <>
       <FlexBox isMine={isMine}>
-        <Container isMine={isMine}>{content}</Container>
+        <Container isMine={isMine}>
+          <ReplaceUrl text={content} />
+        </Container>
       </FlexBox>
     </>
   );
