@@ -98,10 +98,6 @@ export default function Main() {
     });
   };
 
-  // const handleAvatarInput = (e: any) => {
-  //   setAvatarInputValue(e.target.value);
-  // };
-
   const handleAvatarSave = () => {
     if (avatarInputValue !== undefined) {
       localStorage.setItem('avatar', avatarInputValue);
@@ -122,26 +118,6 @@ export default function Main() {
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
   };
-
-  // const suffix = (
-  //   <>
-  //     <Button
-  //       style={{
-  //         height: '3.4rem',
-  //         padding: '1rem',
-  //         borderRadius: '2rem',
-  //         background: 'rgba(91, 33, 255, 1)',
-  //         display: 'Flex',
-  //         alignItems: 'center',
-  //         justifyContent: 'center',
-  //         color: '#e8e8e8',
-  //       }}
-  //       onClick={handleStartChatting}
-  //     >
-  //       채팅하러가기
-  //     </Button>
-  //   </>
-  // );
 
   useEffect(() => {
     if (localStorage.getItem('isLastest') === null) {
@@ -236,3 +212,27 @@ export default function Main() {
     </>
   );
 }
+
+// const handleAvatarInput = (e: any) => {
+//   setAvatarInputValue(e.target.value);
+// };
+
+// const suffix = (
+//   <>
+//     <Button
+//       style={{
+//         height: '3.4rem',
+//         padding: '1rem',
+//         borderRadius: '2rem',
+//         background: 'rgba(91, 33, 255, 1)',
+//         display: 'Flex',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         color: '#e8e8e8',
+//       }}
+//       onClick={handleStartChatting}
+//     >
+//       채팅하러가기
+//     </Button>
+//   </>
+// );
