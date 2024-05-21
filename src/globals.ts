@@ -20,17 +20,17 @@ const GlobalStyle = createGlobalStyle`
 
     background: linear-gradient(
       72deg,
-      rgba(255, 255, 255, 0.01) 2%,
+      #e2a5ff,
       rgba(0, 102, 255, 0.7) 100%
-    ),
-    #e2a5ff;
+    );
+
 
     background-repeat: no-repeat;   
     background-size: cover;
   }
 
   html{
-  height:100%;
+height:100%;
   width:100%;
 }
 body{
