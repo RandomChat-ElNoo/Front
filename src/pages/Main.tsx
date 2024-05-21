@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { ConfigProvider, notification } from 'antd';
 import AskModal from '../component/AskModal';
 import { useNavigate } from 'react-router-dom';
-import { socketExit } from '../utils/soket';
 import AvatarSelect from '../component/AvatarSelect';
 
 const Background = styled.div`
@@ -137,8 +136,6 @@ export default function Main() {
 
     window.addEventListener('resize', handleResize);
 
-    socketExit();
-
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -236,3 +233,12 @@ export default function Main() {
 //     </Button>
 //   </>
 // );
+
+console.log(
+  ` _   _  _____         _  _    
+| | | ||_   _|       | || |   
+| | | |  | |    __ _ | || | __
+| | | |  | |   / _\` || || |/ /
+\\ \\_/ /  | |  | (_| || ||   < 
+\\___/   \\_/   \\__,_||_||_|\\_\\`,
+);
