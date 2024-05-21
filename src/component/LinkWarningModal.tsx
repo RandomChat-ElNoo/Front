@@ -1,20 +1,20 @@
 import { Dispatch, SetStateAction } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
 
-interface ExitConfirmModalProps {
+interface LinkWarningModalProps {
   open: boolean;
   setter: Dispatch<SetStateAction<boolean>>;
+  link: string;
 }
-export default function ExitConfirmModal({
+
+export default function LinkWarningModal({
   open,
   setter,
-}: ExitConfirmModalProps) {
-  const navigator = useNavigate();
-
+  link,
+}: LinkWarningModalProps) {
   const onOkFunc = () => {
     setter(false);
-    navigator('/');
+    window.open(link, '_blank');
   };
   const onCancelFunc = () => {
     setter(false);
@@ -22,15 +22,16 @@ export default function ExitConfirmModal({
   return (
     <>
       <Modal
-        title="나가실 건가요?"
+        title="이 링크를 열면 외부 웹사이트로 이동합니다"
+        width={325}
         open={open}
         closable={false}
-        okText="나가기"
+        okText="링크열기"
         onOk={onOkFunc}
         okButtonProps={{
           style: { backgroundColor: 'rgb(91, 33, 255)', color: 'white' },
         }}
-        cancelText="잘못 눌렀어요"
+        cancelText="안 열래요"
         onCancel={onCancelFunc}
       ></Modal>
     </>
