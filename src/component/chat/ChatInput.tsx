@@ -1,7 +1,7 @@
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Button, ConfigProvider, Input } from 'antd';
 import styled from 'styled-components';
-import { socketTyping } from '../utils/soket';
+import { socketTyping } from '../../utils/soket';
 const InputContainer = styled.div`
   padding: 1rem 2rem 2rem 2rem;
 `;
