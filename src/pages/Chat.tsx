@@ -10,14 +10,14 @@ import {
   socketAvatar,
   SocketIoAvaliableEventRecord,
 } from '../utils/soket';
-import OwnAvatar from '../component/OwnAvatar';
-import ExitButton from '../component/ExitButton';
-import Notification from '../component/Notification';
-import ChatBox from '../component/ChatBox';
-import ChatInput from '../component/ChatInput';
-import Typing from '../component/Typing';
-import Loading from '../component/Loading';
-import RematchingModal from '../component/RematchingModal';
+import OwnAvatar from '../component/chat/OwnAvatar';
+import ExitButton from '../component/chat/ExitButton';
+import Notification from '../component/chat/Notification';
+import ChatBox from '../component/chat/ChatBox';
+import ChatInput from '../component/chat/ChatInput';
+import Typing from '../component/chat/Typing';
+import Loading from '../component/chat/Loading';
+import RematchingModal from '../component/chat/RematchingModal';
 import usePrevious from '../hooks/usePrevAction';
 import usePreventRefresh from '../hooks/usePreventRefresh';
 

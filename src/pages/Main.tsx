@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ConfigProvider, notification } from 'antd';
-import AskModal from '../component/AskModal';
+import AskModal from '../component/main/AskModal';
 import { useNavigate } from 'react-router-dom';
-import AvatarSelect from '../component/AvatarSelect';
+import AvatarSelect from '../component/main/AvatarSelect';
 
 const Background = styled.div`
   position: relative;
