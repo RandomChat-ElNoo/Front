@@ -63,10 +63,8 @@ export default function AskModal({
   useEffect(() => {
     if (open && inputValue.trim().length !== 0) {
       setAskOkButton(true);
-      console.log(true);
     } else {
       setAskOkButton(false);
-      console.log(false);
     }
   }, [inputValue, open, askOkButton]);
 
