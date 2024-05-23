@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import {
-  socket,
-  socketJoin,
-  socketExit,
-  socketCount,
-  socketChat,
-  socketAvatar,
-  SocketIoAvaliableEventRecord,
-} from '../utils/soket';
+// import {
+//   socket,
+//   socketJoin,
+//   socketExit,
+//   socketCount,
+//   socketChat,
+//   socketAvatar,
+//   SocketIoAvaliableEventRecord,
+// } from '../utils/soket';
 import OwnAvatar from '../component/chat/OwnAvatar';
 import ExitButton from '../component/chat/ExitButton';
 import Notification from '../component/chat/Notification';
@@ -75,6 +75,10 @@ export function useInterval(callback: () => void, delay: number | null) {
   }, [delay]);
 }
 
+export const worker = new Worker(
+  new URL('../utils/worker.js', import.meta.url),
+);
+
 export default function Chat() {
   const [connected, setConnected] = useState(false);
   const [actionState, setActionState] = useState<Action>('');
@@ -92,25 +96,27 @@ export default function Chat() {
   const matchingTimeoutRef = useRef<number | undefined>(undefined);
   const scrollRef = useRef<any>();
   const prevAct = usePrevious(actionState);
-  // const history = createBrowserHistory();
 
   usePreventRefresh();
 
   const handleJoin = () => {
-    socketJoin();
+    // socketJoin();
+    worker.postMessage({ action: 'join', data: undefined });
     setConnected(false);
     setChattings([]);
   };
 
   const handleExit = () => {
-    socketExit();
+    // socketExit();
+    worker.postMessage({ action: 'exit', data: undefined });
   };
 
   const handleEnter = () => {
     if (chatInputValue.length > 0) {
       const a = [...chattings, [chatInputValue, true]];
       setChattings(a);
-      socketChat(chatInputValue);
+      // socketChat(chatInputValue);
+      worker.postMessage({ action: 'message', data: chatInputValue });
       window.scrollTo(0, document.body.scrollHeight);
     }
   };
@@ -131,7 +137,8 @@ export default function Chat() {
   const handleStartMatchingTimeout = () => {
     matchingTimeoutRef.current = window.setTimeout(() => {
       setIsRematchingModal(true);
-      socketExit();
+      // socketExit();
+      worker.postMessage({ action: 'exit', data: undefined });
     }, 60 * 1000);
   };
 
@@ -140,7 +147,8 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    handleJoin();
+    // handleJoin();
+    worker.postMessage({ action: 'join', data: undefined });
 
     let isCooldown = false;
     let interval = -1;
@@ -151,7 +159,8 @@ export default function Chat() {
       isCooldown = true;
       interval = window.setTimeout(() => {
         isCooldown = false;
-        socketCount();
+        // socketCount();
+        worker.postMessage({ action: 'count', data: undefined });
       }, 1500);
     };
 
@@ -162,8 +171,8 @@ export default function Chat() {
         window.scrollTo(0, document.body.scrollHeight);
       }
     };
-
-    const handleAction = (response: SocketIoAvaliableEventRecord['action']) => {
+    // SocketIoAvaliableEventRecord['action']
+    const handleAction = (response: any) => {
       if (['join', 'exit', 'wait'].includes(response.action)) {
         setActionState(response.action as Action);
       }
@@ -171,7 +180,11 @@ export default function Chat() {
         case 'join':
           setConnected(true);
           setIsMatching(false);
-          socketAvatar(localStorage.getItem('avatar'));
+          // socketAvatar(localStorage.getItem('avatar'));
+          worker.postMessage({
+            action: 'avatar',
+            data: localStorage.getItem('avatar'),
+          });
           clearTimeout(interval);
           handleClearMatchingTimeout();
           setIsInputDisable(false);
@@ -198,11 +211,21 @@ export default function Chat() {
           break;
       }
     };
-    socket.on('action', handleAction);
-    socket.on('message', handleMessage);
+
+    // socket.on('action', handleAction);
+    // socket.on('message', handleMessage);
+    worker.onmessage = (e: any) => {
+      const { action } = e.data;
+      if (action) {
+        handleAction(e.data);
+      } else {
+        handleMessage(e.data);
+      }
+    };
     return () => {
-      socket.off('action', handleAction);
-      socket.off('message', handleMessage);
+      // socket.off('action', handleAction);
+      // socket.off('message', handleMessage);
+      worker.terminate();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -219,6 +242,23 @@ export default function Chat() {
   useEffect(() => {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [chattings, isTyping]);
+
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     if (document.visibilityState === 'visible') {
+  //       console.log('현재 탭이 활성화되었습니다.');
+  //     } else {
+  //       console.log('현재 탭이 비활성화되었습니다.');
+  //     }
+  //   };
+
+  //   document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  //   // 컴포넌트가 언마운트될 때 이벤트 리스너를 제거합니다.
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
+  //   };
+  // }, []);
 
   return (
     <>
