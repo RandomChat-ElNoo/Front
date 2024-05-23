@@ -1,7 +1,8 @@
-import { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
-import { socketJoin } from '../../utils/soket';
+import { worker } from '../../pages/Chat';
+// import { socketJoin } from '../../utils/soket';
 
 interface RematchingModalProps {
   open: boolean;
@@ -16,7 +17,8 @@ export default function RematchingModal({
 
   const onOkFunc = () => {
     setter(false);
-    socketJoin();
+    // socketJoin();
+    worker.postMessage({ action: 'join', data: undefined });
   };
 
   const onCancelFunc = () => {

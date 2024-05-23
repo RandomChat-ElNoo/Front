@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ConfigProvider, notification } from 'antd';
 import AskModal from '../component/main/AskModal';
@@ -240,5 +240,5 @@ console.log(
 | | | |  | |    __ _ | || | __
 | | | |  | |   / _\` || || |/ /
 \\ \\_/ /  | |  | (_| || ||   < 
-\\___/   \\_/   \\__,_||_||_|\\_\\`,
+ \\___/   \\_/   \\__,_||_||_|\\_\\`,
 );
