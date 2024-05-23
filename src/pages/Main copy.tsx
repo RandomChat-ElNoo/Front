@@ -80,7 +80,7 @@ const ImgContainer = styled.div`
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
-export default function Main() {
+export default function Main2() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [modal, setModal] = useState(false);
   const [askInputValue, setAskInputValue] = useState('');

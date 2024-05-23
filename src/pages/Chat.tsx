@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-// import { createBrowserHistory } from 'history';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
   socket,
