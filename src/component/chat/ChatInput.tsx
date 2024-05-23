@@ -1,7 +1,10 @@
+import React from 'react';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Button, ConfigProvider, Input } from 'antd';
 import styled from 'styled-components';
-import { socketTyping } from '../../utils/soket';
+import { worker } from '../../pages/Chat';
+// import { socketTyping } from '../../utils/soket';
+
 const InputContainer = styled.div`
   padding: 1rem 2rem 2rem 2rem;
 `;
@@ -29,7 +32,8 @@ export default function ChatInput({
 }: ChatInputProps) {
   const handleInputValue = (e: any) => {
     chatInputSetter(e.target.value);
-    socketTyping();
+    // socketTyping();
+    worker.postMessage({ action: 'typing', data: undefined });
   };
 
   const handleSendMessage = () => {
