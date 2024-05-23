@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { Modal } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
@@ -18,8 +18,10 @@ export default function AskModal({
   setValue,
   open,
   setter,
+
   openNotification,
 }: AskModalProps) {
+  const [askOkButton, setAskOkButton] = useState(false);
   const form = useRef<HTMLFormElement>(null);
 
   const handleSetInputValue = (e: any) => {
@@ -27,12 +29,14 @@ export default function AskModal({
   };
 
   const handleClose = () => {
-    setter(false);
     setValue('');
+    setAskOkButton(true);
+    setter(false);
   };
 
   const sendEmail = (e: any) => {
     e.preventDefault();
+    handleClose();
     if (inputValue) {
       emailjs
         .sendForm('service_6xoddmk', 'template_h00hlf8', form.current || '', {
@@ -41,7 +45,6 @@ export default function AskModal({
         .then(
           () => {
             openNotification('success');
-            handleClose();
           },
           error => {
             openNotification('error', error.text);
@@ -50,6 +53,16 @@ export default function AskModal({
         );
     }
   };
+
+  useEffect(() => {
+    if (open && inputValue.trim().length !== 0) {
+      setAskOkButton(true);
+      console.log(true);
+    } else {
+      setAskOkButton(false);
+      console.log(false);
+    }
+  }, [inputValue, open, askOkButton]);
 
   return (
     <>
@@ -61,7 +74,10 @@ export default function AskModal({
         onOk={sendEmail}
         onCancel={handleClose}
         okButtonProps={{
-          style: { backgroundColor: 'rgb(91, 33, 255)', color: 'white' },
+          style: askOkButton
+            ? { backgroundColor: 'rgb(91, 33, 255)', color: 'white' }
+            : { backgroundColor: 'rgb(177, 148, 255)', color: 'white' },
+          disabled: !askOkButton,
         }}
       >
         <form ref={form}>
