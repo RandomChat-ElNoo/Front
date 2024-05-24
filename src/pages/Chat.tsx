@@ -145,10 +145,12 @@ export default function Chat() {
   const handleClearMatchingTimeout = () => {
     clearTimeout(matchingTimeoutRef.current);
   };
-
+  const handleFirstJoin = () => {
+    worker.postMessage({ action: 'join', data: undefined });
+  };
   useEffect(() => {
     // handleJoin();
-    worker.postMessage({ action: 'join', data: undefined });
+    handleFirstJoin();
 
     let isCooldown = false;
     let interval = -1;
@@ -225,7 +227,7 @@ export default function Chat() {
     return () => {
       // socket.off('action', handleAction);
       // socket.off('message', handleMessage);
-      worker.terminate();
+      // worker.terminate();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
