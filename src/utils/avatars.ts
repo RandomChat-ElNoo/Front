@@ -4,7 +4,7 @@ const avatarList = [
   { value: '라임' },
   { value: '러스크' },
   { value: '루나릿트' },
-  { value: '리어엘리스' },
+  { value: '리어앨리스' },
   { value: '리파' },
   { value: '린도' },
   { value: '마누카' },

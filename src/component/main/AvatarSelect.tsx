@@ -1,7 +1,7 @@
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Button, ConfigProvider, Select } from 'antd';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import avatarList from '../utils/avatars';
+import avatarList from '../../utils/avatars';
 
 const Container = styled.div`
   display: flex;
