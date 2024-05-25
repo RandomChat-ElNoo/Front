@@ -91,13 +91,30 @@ export default function Chat() {
   const [isRematchModal, setIsRematchingModal] = useState(false);
   const [isMatching, setIsMatching] = useState(true);
   const [isInputDisable, setIsInputDisable] = useState(true);
+  const [visible, setVisible] = useState(true);
 
   const timeoutRef = useRef<number | undefined>(undefined);
   const matchingTimeoutRef = useRef<number | undefined>(undefined);
   const scrollRef = useRef<any>();
+  const visibleRef = useRef(visible);
   const prevAct = usePrevious(actionState);
 
+  const joinSound = useRef(new Audio('/SoundSource/joinSound.mp3'));
+  const chatSound = useRef(new Audio('/SoundSource/chatSound.mp3'));
+
   usePreventRefresh();
+
+  const playJoinSound = () => {
+    joinSound.current.load();
+    joinSound.current.volume = 0.7;
+    joinSound.current.play();
+  };
+
+  const playChatSound = () => {
+    chatSound.current.load();
+    chatSound.current.volume = 0.7;
+    chatSound.current.play();
+  };
 
   const handleJoin = () => {
     // socketJoin();
@@ -168,6 +185,9 @@ export default function Chat() {
 
     const handleMessage = (msg: string) => {
       if (msg !== 'Unable to send message, not joined.') {
+        if (!visibleRef.current) {
+          playChatSound();
+        }
         setChattings(prevMsg => [...prevMsg, [msg, false]]);
         setIsTyping(false);
         window.scrollTo(0, document.body.scrollHeight);
@@ -180,6 +200,9 @@ export default function Chat() {
       }
       switch (response.action) {
         case 'join':
+          if (!visibleRef.current) {
+            playJoinSound();
+          }
           setConnected(true);
           setIsMatching(false);
           // socketAvatar(localStorage.getItem('avatar'));
@@ -245,22 +268,25 @@ export default function Chat() {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [chattings, isTyping]);
 
-  // useEffect(() => {
-  //   const handleVisibilityChange = () => {
-  //     if (document.visibilityState === 'visible') {
-  //       console.log('현재 탭이 활성화되었습니다.');
-  //     } else {
-  //       console.log('현재 탭이 비활성화되었습니다.');
-  //     }
-  //   };
+  useEffect(() => {
+    visibleRef.current = visible;
+  }, [visible]);
 
-  //   document.addEventListener('visibilitychange', handleVisibilityChange);
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        setVisible(true);
+      } else {
+        setVisible(false);
+      }
+    };
 
-  //   // 컴포넌트가 언마운트될 때 이벤트 리스너를 제거합니다.
-  //   return () => {
-  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
-  //   };
-  // }, []);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [visible]);
 
   return (
     <>
