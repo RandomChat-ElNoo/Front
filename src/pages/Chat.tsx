@@ -184,7 +184,13 @@ export default function Chat() {
     };
 
     const handleMessage = (msg: string) => {
-      if (msg !== 'Unable to send message, not joined.') {
+      if (msg === 'Error: 상대방의 연결이 끊어졌습니다.') {
+        console.log('Error: 상대방의 연결이 끊어졌습니다.');
+      }
+      if (
+        msg !== 'Unable to send message, not joined.' &&
+        msg !== 'Error: 상대방의 연결이 끊어졌습니다.'
+      ) {
         if (!visibleRef.current) {
           playChatSound();
         }
