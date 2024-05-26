@@ -51,7 +51,7 @@ const Chattings = styled.div`
   overflow-y: auto;
 `;
 
-type Action = 'join' | 'exit' | 'wait' | '';
+type Action = 'join' | 'exit' | 'wait' | 'errorExit' | '';
 
 export function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback);
@@ -111,6 +111,8 @@ export default function Chat() {
       body: `${act === 'join' ? '매칭되었습니다!' : `${msg}`}`,
       icon: '/Imgs/favicon.ico',
     });
+
+    setTimeout(notification.close.bind(notification), 3500);
 
     notification.addEventListener(
       'click',
@@ -202,7 +204,7 @@ export default function Chat() {
     };
     // SocketIoAvaliableEventRecord['action']
     const handleAction = (response: any) => {
-      if (['join', 'exit', 'wait'].includes(response.action)) {
+      if (['join', 'exit', 'wait', 'errorExit'].includes(response.action)) {
         setActionState(response.action as Action);
       }
       switch (response.action) {
@@ -221,6 +223,7 @@ export default function Chat() {
           handleClearMatchingTimeout();
           setIsInputDisable(false);
           break;
+        case 'errorExit':
         case 'exit':
           clearTimeout(interval);
           setChatInputValue('');
@@ -267,10 +270,10 @@ export default function Chat() {
     if (prevAct === 'wait' && actionState === 'exit') {
       setIsRematchingModal(true);
     }
-    if (prevAct === 'join' && actionState === 'exit') {
+    if (isMatching === false && ['exit', 'errorExit'].includes(actionState)) {
       window.scrollTo(0, document.body.scrollHeight);
     }
-  }, [actionState, prevAct]);
+  }, [actionState, prevAct, isMatching]);
 
   useEffect(() => {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -324,9 +327,15 @@ export default function Chat() {
               </>
             ))}
             {isTyping ? <Typing /> : ''}
-            {actionState === 'exit' ? (
+            {actionState === 'errorExit' ? (
               <ChatNotification
                 type="disConnect"
+                rematching={handleJoin}
+                key="disconnect"
+              />
+            ) : actionState === 'exit' ? (
+              <ChatNotification
+                type="exit"
                 rematching={handleJoin}
                 key="disconnect"
               />
