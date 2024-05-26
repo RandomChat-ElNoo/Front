@@ -58,7 +58,7 @@ const ReMatching = styled.button`
 `;
 
 interface ChatNotificationProps {
-  type: 'connect' | 'disConnect';
+  type: 'connect' | 'disConnect' | 'exit';
   rematching?: () => void;
 }
 export default function ChatNotification({
@@ -71,7 +71,9 @@ export default function ChatNotification({
         <Notifications>
           {type === 'connect'
             ? '상대방과 연결되었습니다!'
-            : '상대방이 퇴장하였습니다.'}
+            : type === 'exit'
+            ? '상대방이 퇴장하였습니다.'
+            : '상대방과의 연결이 끊겼습니다.'}
         </Notifications>
         {type === 'connect' ? (
           ''
