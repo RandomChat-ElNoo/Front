@@ -11,7 +11,7 @@ import styled from 'styled-components';
 // } from '../utils/soket';
 import OwnAvatar from '../component/chat/OwnAvatar';
 import ExitButton from '../component/chat/ExitButton';
-import Notification from '../component/chat/Notification';
+import ChatNotification from '../component/chat/ChatNotification';
 import ChatBox from '../component/chat/ChatBox';
 import ChatInput from '../component/chat/ChatInput';
 import Typing from '../component/chat/Typing';
@@ -101,13 +101,13 @@ export default function Chat() {
 
   usePreventRefresh();
 
-  const requedstPermission = async () => {
+  const requestPermission = async () => {
     // 권한 묻기
-    await (Notification as any).requestPermission();
+    await Notification.requestPermission();
   };
 
   const notificate = (act: 'join' | 'msg', msg?: string) => {
-    const notification = new (Notification as any)('VTalk', {
+    const notification = new Notification('VTalk', {
       body: `${act === 'join' ? '매칭되었습니다!' : `${msg}`}`,
       icon: '/Imgs/favicon.ico',
     });
@@ -244,7 +244,7 @@ export default function Chat() {
       }
     };
 
-    requedstPermission();
+    requestPermission();
 
     // socket.on('action', handleAction);
     // socket.on('message', handleMessage);
@@ -313,7 +313,7 @@ export default function Chat() {
             key={'Avatars'}
           />
           <Chattings ref={scrollRef}>
-            {connected ? <Notification type="connect" key="connect" /> : ''}
+            {connected ? <ChatNotification type="connect" key="connect" /> : ''}
             {chattings.map((item: any, index: number) => (
               <>
                 <ChatBox
@@ -325,7 +325,7 @@ export default function Chat() {
             ))}
             {isTyping ? <Typing /> : ''}
             {actionState === 'exit' ? (
-              <Notification
+              <ChatNotification
                 type="disConnect"
                 rematching={handleJoin}
                 key="disconnect"

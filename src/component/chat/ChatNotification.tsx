@@ -57,11 +57,14 @@ const ReMatching = styled.button`
   }
 `;
 
-interface NotificationProps {
+interface ChatNotificationProps {
   type: 'connect' | 'disConnect';
   rematching?: () => void;
 }
-export default function Notification({ type, rematching }: NotificationProps) {
+export default function ChatNotification({
+  type,
+  rematching,
+}: ChatNotificationProps) {
   return (
     <>
       <Container>
