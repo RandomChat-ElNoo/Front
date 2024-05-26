@@ -99,21 +99,26 @@ export default function Chat() {
   const visibleRef = useRef(visible);
   const prevAct = usePrevious(actionState);
 
-  const joinSound = useRef(new Audio('/SoundSource/joinSound.mp3'));
-  const chatSound = useRef(new Audio('/SoundSource/chatSound.mp3'));
-
   usePreventRefresh();
 
-  const playJoinSound = () => {
-    joinSound.current.load();
-    joinSound.current.volume = 0.7;
-    joinSound.current.play();
+  const requedstPermission = async () => {
+    // 권한 묻기
+    await (Notification as any).requestPermission();
   };
 
-  const playChatSound = () => {
-    chatSound.current.load();
-    chatSound.current.volume = 0.7;
-    chatSound.current.play();
+  const notificate = (act: 'join' | 'msg', msg?: string) => {
+    const notification = new (Notification as any)('VTalk', {
+      body: `${act === 'join' ? '매칭되었습니다!' : `${msg}`}`,
+      icon: '/Imgs/favicon.ico',
+    });
+
+    notification.addEventListener(
+      'click',
+      () => {
+        window.focus();
+      },
+      { once: true },
+    );
   };
 
   const handleJoin = () => {
@@ -162,9 +167,11 @@ export default function Chat() {
   const handleClearMatchingTimeout = () => {
     clearTimeout(matchingTimeoutRef.current);
   };
+
   const handleFirstJoin = () => {
     worker.postMessage({ action: 'join', data: undefined });
   };
+
   useEffect(() => {
     // handleJoin();
     handleFirstJoin();
@@ -184,15 +191,9 @@ export default function Chat() {
     };
 
     const handleMessage = (msg: string) => {
-      if (msg === 'Error: 상대방의 연결이 끊어졌습니다.') {
-        console.log('Error: 상대방의 연결이 끊어졌습니다.');
-      }
-      if (
-        msg !== 'Unable to send message, not joined.' &&
-        msg !== 'Error: 상대방의 연결이 끊어졌습니다.'
-      ) {
+      if (msg !== 'Unable to send message, not joined.') {
         if (!visibleRef.current) {
-          playChatSound();
+          notificate('msg', msg);
         }
         setChattings(prevMsg => [...prevMsg, [msg, false]]);
         setIsTyping(false);
@@ -207,7 +208,7 @@ export default function Chat() {
       switch (response.action) {
         case 'join':
           if (!visibleRef.current) {
-            playJoinSound();
+            notificate('join');
           }
           setConnected(true);
           setIsMatching(false);
@@ -243,6 +244,8 @@ export default function Chat() {
       }
     };
 
+    requedstPermission();
+
     // socket.on('action', handleAction);
     // socket.on('message', handleMessage);
     worker.onmessage = (e: any) => {
@@ -256,7 +259,6 @@ export default function Chat() {
     return () => {
       // socket.off('action', handleAction);
       // socket.off('message', handleMessage);
-      // worker.terminate();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
