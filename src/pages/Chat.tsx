@@ -11,7 +11,7 @@ import styled from 'styled-components';
 // } from '../utils/soket';
 import OwnAvatar from '../component/chat/OwnAvatar';
 import ExitButton from '../component/chat/ExitButton';
-import Notification from '../component/chat/Notification';
+import ChatNotification from '../component/chat/ChatNotification';
 import ChatBox from '../component/chat/ChatBox';
 import ChatInput from '../component/chat/ChatInput';
 import Typing from '../component/chat/Typing';
@@ -51,7 +51,7 @@ const Chattings = styled.div`
   overflow-y: auto;
 `;
 
-type Action = 'join' | 'exit' | 'wait' | '';
+type Action = 'join' | 'exit' | 'wait' | 'errorExit' | '';
 
 export function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback);
@@ -99,21 +99,28 @@ export default function Chat() {
   const visibleRef = useRef(visible);
   const prevAct = usePrevious(actionState);
 
-  const joinSound = useRef(new Audio('/SoundSource/joinSound.mp3'));
-  const chatSound = useRef(new Audio('/SoundSource/chatSound.mp3'));
-
   usePreventRefresh();
 
-  const playJoinSound = () => {
-    joinSound.current.load();
-    joinSound.current.volume = 0.7;
-    joinSound.current.play();
+  const requestPermission = async () => {
+    // 권한 묻기
+    await Notification.requestPermission();
   };
 
-  const playChatSound = () => {
-    chatSound.current.load();
-    chatSound.current.volume = 0.7;
-    chatSound.current.play();
+  const notificate = (act: 'join' | 'msg', msg?: string) => {
+    const notification = new Notification('VTalk', {
+      body: `${act === 'join' ? '매칭되었습니다!' : `${msg}`}`,
+      icon: '/Imgs/favicon.ico',
+    });
+
+    setTimeout(notification.close.bind(notification), 3500);
+
+    notification.addEventListener(
+      'click',
+      () => {
+        window.focus();
+      },
+      { once: true },
+    );
   };
 
   const handleJoin = () => {
@@ -162,9 +169,11 @@ export default function Chat() {
   const handleClearMatchingTimeout = () => {
     clearTimeout(matchingTimeoutRef.current);
   };
+
   const handleFirstJoin = () => {
     worker.postMessage({ action: 'join', data: undefined });
   };
+
   useEffect(() => {
     // handleJoin();
     handleFirstJoin();
@@ -184,15 +193,9 @@ export default function Chat() {
     };
 
     const handleMessage = (msg: string) => {
-      if (msg === 'Error: 상대방의 연결이 끊어졌습니다.') {
-        console.log('Error: 상대방의 연결이 끊어졌습니다.');
-      }
-      if (
-        msg !== 'Unable to send message, not joined.' &&
-        msg !== 'Error: 상대방의 연결이 끊어졌습니다.'
-      ) {
+      if (msg !== 'Unable to send message, not joined.') {
         if (!visibleRef.current) {
-          playChatSound();
+          notificate('msg', msg);
         }
         setChattings(prevMsg => [...prevMsg, [msg, false]]);
         setIsTyping(false);
@@ -201,13 +204,13 @@ export default function Chat() {
     };
     // SocketIoAvaliableEventRecord['action']
     const handleAction = (response: any) => {
-      if (['join', 'exit', 'wait'].includes(response.action)) {
+      if (['join', 'exit', 'wait', 'errorExit'].includes(response.action)) {
         setActionState(response.action as Action);
       }
       switch (response.action) {
         case 'join':
           if (!visibleRef.current) {
-            playJoinSound();
+            notificate('join');
           }
           setConnected(true);
           setIsMatching(false);
@@ -220,6 +223,7 @@ export default function Chat() {
           handleClearMatchingTimeout();
           setIsInputDisable(false);
           break;
+        case 'errorExit':
         case 'exit':
           clearTimeout(interval);
           setChatInputValue('');
@@ -243,6 +247,8 @@ export default function Chat() {
       }
     };
 
+    requestPermission();
+
     // socket.on('action', handleAction);
     // socket.on('message', handleMessage);
     worker.onmessage = (e: any) => {
@@ -256,7 +262,6 @@ export default function Chat() {
     return () => {
       // socket.off('action', handleAction);
       // socket.off('message', handleMessage);
-      // worker.terminate();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -265,10 +270,10 @@ export default function Chat() {
     if (prevAct === 'wait' && actionState === 'exit') {
       setIsRematchingModal(true);
     }
-    if (prevAct === 'join' && actionState === 'exit') {
+    if (isMatching === false && ['exit', 'errorExit'].includes(actionState)) {
       window.scrollTo(0, document.body.scrollHeight);
     }
-  }, [actionState, prevAct]);
+  }, [actionState, prevAct, isMatching]);
 
   useEffect(() => {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -311,7 +316,7 @@ export default function Chat() {
             key={'Avatars'}
           />
           <Chattings ref={scrollRef}>
-            {connected ? <Notification type="connect" key="connect" /> : ''}
+            {connected ? <ChatNotification type="connect" key="connect" /> : ''}
             {chattings.map((item: any, index: number) => (
               <>
                 <ChatBox
@@ -322,9 +327,15 @@ export default function Chat() {
               </>
             ))}
             {isTyping ? <Typing /> : ''}
-            {actionState === 'exit' ? (
-              <Notification
+            {actionState === 'errorExit' ? (
+              <ChatNotification
                 type="disConnect"
+                rematching={handleJoin}
+                key="disconnect"
+              />
+            ) : actionState === 'exit' ? (
+              <ChatNotification
+                type="exit"
                 rematching={handleJoin}
                 key="disconnect"
               />
