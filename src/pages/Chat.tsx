@@ -53,28 +53,6 @@ const Chattings = styled.div`
 
 type Action = 'join' | 'exit' | 'wait' | 'errorExit' | '';
 
-export function useInterval(callback: () => void, delay: number | null) {
-  const savedCallback = useRef(callback);
-
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  useEffect(() => {
-    if (delay === null) {
-      return;
-    }
-
-    const id = setInterval(() => {
-      savedCallback.current();
-    }, delay);
-
-    return () => {
-      clearInterval(id);
-    };
-  }, [delay]);
-}
-
 export const worker = new Worker(
   new URL('../utils/worker.js', import.meta.url),
 );
@@ -102,7 +80,6 @@ export default function Chat() {
   usePreventRefresh();
 
   const requestPermission = async () => {
-    // 권한 묻기
     await Notification.requestPermission();
   };
 
@@ -126,6 +103,7 @@ export default function Chat() {
   const handleJoin = () => {
     // socketJoin();
     worker.postMessage({ action: 'join', data: undefined });
+    worker.postMessage({ action: 'count', data: undefined });
     setConnected(false);
     setChattings([]);
   };
@@ -172,6 +150,7 @@ export default function Chat() {
 
   const handleFirstJoin = () => {
     worker.postMessage({ action: 'join', data: undefined });
+    worker.postMessage({ action: 'count', data: undefined });
   };
 
   useEffect(() => {
@@ -189,7 +168,7 @@ export default function Chat() {
         isCooldown = false;
         // socketCount();
         worker.postMessage({ action: 'count', data: undefined });
-      }, 1500);
+      }, 3000);
     };
 
     const handleMessage = (msg: string) => {
@@ -202,6 +181,7 @@ export default function Chat() {
         window.scrollTo(0, document.body.scrollHeight);
       }
     };
+
     // SocketIoAvaliableEventRecord['action']
     const handleAction = (response: any) => {
       if (['join', 'exit', 'wait', 'errorExit'].includes(response.action)) {
@@ -228,8 +208,10 @@ export default function Chat() {
           clearTimeout(interval);
           setChatInputValue('');
           setIsInputDisable(true);
+          handleClearMatchingTimeout();
           break;
         case 'wait':
+          isCooldown = false;
           setIsMatching(true);
           sendCountDealyed();
           handleStartMatchingTimeout();
@@ -253,6 +235,7 @@ export default function Chat() {
     // socket.on('message', handleMessage);
     worker.onmessage = (e: any) => {
       const { action } = e.data;
+
       if (action) {
         handleAction(e.data);
       } else {
