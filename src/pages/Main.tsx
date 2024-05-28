@@ -56,7 +56,7 @@ const Ask = styled.button`
   justify-content: center;
   gap: 0.5rem;
 
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 500;
   line-height: 1.4rem;
   @media (max-width: 420px) {
@@ -201,6 +201,7 @@ export default function Main() {
                 <ImgContainer>
                   <img alt="문의하기" src="/Imgs/VRC_icon.svg" />
                 </ImgContainer>
+                <p>문의하기</p>
               </Ask>
             </FlexContainer>
           </Container>
