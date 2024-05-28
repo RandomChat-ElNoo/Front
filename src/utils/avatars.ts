@@ -42,6 +42,7 @@ const avatarList = [
   { value: '이요' },
   { value: '카린' },
   { value: '코마노' },
+  { value: '코유키' },
   { value: '코코아' },
   { value: '쿄코' },
   { value: '키쿄' },
