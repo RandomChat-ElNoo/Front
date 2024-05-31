@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 // import {
 //   socket,
@@ -71,11 +71,12 @@ export default function Chat() {
   const [isInputDisable, setIsInputDisable] = useState(true);
   const [visible, setVisible] = useState(true);
 
+  const prevAct = usePrevious(actionState);
   const timeoutRef = useRef<number | undefined>(undefined);
   const matchingTimeoutRef = useRef<number | undefined>(undefined);
-  const scrollRef = useRef<any>();
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const visibleRef = useRef(visible);
-  const prevAct = usePrevious(actionState);
+  const backgroundRef = useRef<HTMLDivElement | null>(null);
 
   usePreventRefresh();
 
@@ -259,8 +260,10 @@ export default function Chat() {
   }, [actionState, prevAct, isMatching]);
 
   useEffect(() => {
-    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [chattings, isTyping]);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [chattings, isTyping, actionState, scrollRef]);
 
   useEffect(() => {
     visibleRef.current = visible;
@@ -284,7 +287,7 @@ export default function Chat() {
 
   return (
     <>
-      <Background>
+      <Background ref={backgroundRef}>
         <ChatContainer>
           <ExitFlex>
             <ExitButton onClickFunc={handleExit} />
@@ -305,6 +308,7 @@ export default function Chat() {
                 <ChatBox
                   content={item[0]}
                   isMine={item[1]}
+                  scrollRef={scrollRef}
                   key={`채팅-${index}`}
                 />
               </>
@@ -331,6 +335,8 @@ export default function Chat() {
             InputValue={chatInputValue}
             chatInputSetter={setChatInputValue}
             disabled={isInputDisable}
+            setChattings={setChattings}
+            backgroundRef={backgroundRef}
           />
         </ChatContainer>
         {isMatching ? <Loading clientCount={clientCount} /> : ''}

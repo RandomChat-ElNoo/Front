@@ -1,6 +1,7 @@
-import React from 'react';
+import { useEffect, useState, MutableRefObject } from 'react';
 import styled from 'styled-components';
 import ReplaceUrl from './ReplaceUrl';
+import Emojis from './Emojis';
 
 const Container = styled.div.withConfig({
   shouldForwardProp: prop => ['isMine', 'children'].includes(prop),
@@ -27,19 +28,38 @@ const FlexBox = styled.div.withConfig({
   display: flex;
   justify-content: ${props => (props.isMine ? 'right' : 'left')};
 `;
+
 interface ContainerProps {
   isMine: boolean;
 }
 interface ChatProps {
   content: string;
   isMine: boolean;
+  scrollRef: MutableRefObject<HTMLDivElement | null>;
 }
-export default function ChatBox({ content, isMine }: ChatProps) {
+export default function ChatBox({ content, isMine, scrollRef }: ChatProps) {
+  const [isEmoji, setIsEmoji] = useState<boolean>(false);
+
+  useEffect(() => {
+    const emojiReg = /:Angry:|:Dizzy:|:FreakOut:|:LOL:|:Bye:|:Hello:/;
+    const test = emojiReg.test(content);
+    setIsEmoji(test);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [content, scrollRef]);
+
+  useEffect(() => {}, [isEmoji]);
+
   return (
     <>
       <FlexBox isMine={isMine}>
         <Container isMine={isMine}>
-          <ReplaceUrl text={content} />
+          {isEmoji ? (
+            <Emojis content={content} scrollRef={scrollRef} />
+          ) : (
+            <ReplaceUrl text={content} />
+          )}
         </Container>
       </FlexBox>
     </>
