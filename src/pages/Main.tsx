@@ -57,7 +57,7 @@ const Ask = styled.button`
   gap: 0.5rem;
 
   font-size: 1.4rem;
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1.4rem;
   @media (max-width: 420px) {
     margin-top: 5rem;
