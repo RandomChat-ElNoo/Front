@@ -47,7 +47,7 @@ body{
     color: inherit;
   }
   ::-webkit-scrollbar {
-    width: 0.8rem;  
+    width: 0.6rem;  
 }
 ::-webkit-scrollbar-thumb {
     background: rgba(50,50,50,0.6); /* 스크롤바 색상 */
