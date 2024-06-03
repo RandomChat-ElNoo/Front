@@ -8,7 +8,6 @@ const ImgContainer = styled.div`
   img {
     width: 100%;
     height: 100%;
-    object-fit: fill;
   }
 
   @media (max-width: 520px) {
@@ -27,22 +26,22 @@ export default function Emojis({ content, scrollRef }: EmojiProps) {
   useEffect(() => {
     switch (content) {
       case ':Hello:':
-        setImgSrc('/Imgs/VRC_icon.svg');
+        setImgSrc('/Emojis/Hello.svg');
         break;
       case ':Bye:':
-        setImgSrc('/Imgs/VRC_icon.svg');
+        setImgSrc('/Emojis/Bye.svg');
         break;
       case ':LOL:':
-        setImgSrc('/Imgs/VRC_icon.svg');
+        setImgSrc('/Emojis/LOL.svg');
         break;
       case ':FreakOut:':
-        setImgSrc('/Imgs/VRC_icon.svg');
+        setImgSrc('/Emojis/FreakOut.svg');
         break;
       case ':Dizzy:':
-        setImgSrc('/Imgs/VRC_icon.svg');
+        setImgSrc('/Emojis/Dizzy.svg');
         break;
       case ':Angry:':
-        setImgSrc('/Imgs/VRC_icon.svg');
+        setImgSrc('/Emojis/Angry.svg');
         break;
     }
     if (scrollRef.current) {

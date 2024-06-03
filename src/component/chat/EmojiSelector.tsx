@@ -8,7 +8,7 @@ import { worker } from '../../pages/Chat';
 const Container = styled.div`
   max-height: 19rem;
   overflow-x: none;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 `;
 
 const EmojiContainer = styled.div`
