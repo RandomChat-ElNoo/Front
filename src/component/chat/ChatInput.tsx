@@ -8,8 +8,15 @@ import EmojiSelector from './EmojiSelector';
 
 const InputContainer = styled.div`
   padding: 1rem 2rem 2rem 2rem;
+  position: relative;
 `;
 
+const EmojiDiv = styled.div`
+  position: absolute;
+  right: 6.7rem;
+  top: 1.5rem;
+  z-index: 9999;
+`;
 const inputStyle = {
   width: '100%',
   height: '4rem',
@@ -55,10 +62,6 @@ export default function ChatInput({
 
   const suffix = (
     <>
-      <EmojiSelector
-        setChattings={setChattings}
-        backgroundRef={backgroundRef}
-      />
       <Button
         style={{
           width: '3.4rem',
@@ -69,6 +72,7 @@ export default function ChatInput({
           display: 'Flex',
           alignItems: 'center',
           justifyContent: 'center',
+          marginLeft: '3.8rem',
         }}
         onClick={handleSendMessage}
         disabled={disabled}
@@ -105,6 +109,12 @@ export default function ChatInput({
             style={inputStyle}
             disabled={disabled}
           />
+          <EmojiDiv>
+            <EmojiSelector
+              setChattings={setChattings}
+              backgroundRef={backgroundRef}
+            />
+          </EmojiDiv>
         </InputContainer>
       </ConfigProvider>
     </>
