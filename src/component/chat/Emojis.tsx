@@ -16,15 +16,6 @@ const ImgContainer = styled.div`
   }
 `;
 
-const Svg = styled.div<SvgProp>`
-  background-image: src;
-  width: 100%;
-  height: 100%;
-`;
-
-interface SvgProp {
-  src: string;
-}
 interface EmojiProps {
   content: string;
   scrollRef: MutableRefObject<HTMLDivElement | null>;
@@ -60,7 +51,6 @@ export default function Emojis({ content, scrollRef }: EmojiProps) {
 
   return (
     <ImgContainer>
-      <Svg src={imgSrc} />
       <img src={imgSrc} alt="이모지" />
     </ImgContainer>
   );
