@@ -66,7 +66,11 @@ export default function EmojiSelector({
               key={`emoji-${index}`}
               onClick={() => handleSendEmoji(item)}
             >
-              <img src={`/Emojis/${item}.svg`} alt="이모지선택" />
+              <img
+                src={`/Emojis/${item}.svg`}
+                alt="이모지선택"
+                loading="eager"
+              />
             </ImgContainer>
           ))}
         </EmojiContainer>
