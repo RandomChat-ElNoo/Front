@@ -35,17 +35,21 @@ const ImgContainer = styled.div`
 interface EmojiSelectorProps {
   setChattings: Dispatch<SetStateAction<(string | boolean)[][]>>;
   backgroundRef: MutableRefObject<HTMLDivElement | null>;
+  disabled: boolean;
 }
 export default function EmojiSelector({
   setChattings,
   backgroundRef,
+  disabled,
 }: EmojiSelectorProps) {
   const [popover, setPopover] = useState(false);
 
   const emojis = ['Hello', 'Bye', 'LOL', 'Angry', 'Dizzy', 'FreakOut'];
 
   const handleClickEmojiButton = () => {
-    setPopover(prev => !prev);
+    if (!disabled) {
+      setPopover(prev => !prev);
+    }
   };
 
   const handleSendEmoji = (emoji: string) => {
@@ -69,6 +73,7 @@ export default function EmojiSelector({
       </Container>
     </>
   );
+
   useEffect(() => {
     const handleClickBackground = () => {
       setPopover(false);
@@ -84,6 +89,13 @@ export default function EmojiSelector({
       }
     };
   }, [backgroundRef]);
+
+  useEffect(() => {
+    if (disabled) {
+      setPopover(false);
+    }
+  }, [disabled]);
+
   return (
     <>
       <Popover content={content} trigger="click" open={popover}>
