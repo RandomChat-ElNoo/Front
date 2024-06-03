@@ -113,6 +113,7 @@ export default function ChatInput({
             <EmojiSelector
               setChattings={setChattings}
               backgroundRef={backgroundRef}
+              disabled={disabled}
             />
           </EmojiDiv>
         </InputContainer>
