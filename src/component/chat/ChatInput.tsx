@@ -9,13 +9,14 @@ import EmojiSelector from './EmojiSelector';
 const InputContainer = styled.div`
   padding: 1rem 2rem 2rem 2rem;
   position: relative;
+  z-index: 0;
 `;
 
 const EmojiDiv = styled.div`
   position: absolute;
   right: 6.7rem;
   top: 1.5rem;
-  z-index: 9999;
+  z-index: 1;
 `;
 const inputStyle = {
   width: '100%',
@@ -34,6 +35,7 @@ interface ChatInputProps {
   disabled: boolean;
   setChattings: Dispatch<SetStateAction<(string | boolean)[][]>>;
   backgroundRef: MutableRefObject<HTMLDivElement | null>;
+  setIsInputFocused: Dispatch<SetStateAction<boolean>>;
 }
 
 let isCompositionEnded = true;
@@ -45,6 +47,7 @@ export default function ChatInput({
   disabled,
   setChattings,
   backgroundRef,
+  setIsInputFocused,
 }: ChatInputProps) {
   const handleInputValue = (e: any) => {
     chatInputSetter(e.target.value);
@@ -58,6 +61,14 @@ export default function ChatInput({
       chatInputSetter('');
     }
     isCompositionEnded = true;
+  };
+
+  const onFocus = () => {
+    setIsInputFocused(true);
+  };
+
+  const onBlur = () => {
+    setIsInputFocused(false);
   };
 
   const suffix = (
@@ -93,6 +104,9 @@ export default function ChatInput({
       >
         <InputContainer>
           <Input
+            // ref={inputRef}
+            onFocus={onFocus}
+            onBlur={onBlur}
             onCompositionStart={() => {
               isCompositionEnded = false;
             }}

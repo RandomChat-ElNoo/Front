@@ -45,11 +45,42 @@ const ExitFlex = styled.div`
   padding: 0 2rem 2rem 2rem;
 `;
 
-const Chattings = styled.div`
+const Chattings = styled.div<StyledProps>`
   height: calc(100% - 25rem);
-  padding: 0 2rem 0 2rem;
+  padding: 0 2rem;
   overflow-y: auto;
+
+  @media (max-width: 520px) {
+    height: ${({ isInputFocused }) =>
+      isInputFocused ? 'calc(100vh - 17rem)' : 'calc(100vh - 26rem)'};
+    animation: ${({ isInputFocused }) =>
+      isInputFocused
+        ? 'chattingAniOpen 0.1s forwards'
+        : 'chattingAniClose 0.1s forwards'};
+  }
+
+  @keyframes chattingAniOpen {
+    from {
+      height: calc(100vh - 26rem);
+    }
+    to {
+      height: calc(100vh - 17rem);
+    }
+  }
+
+  @keyframes chattingAniClose {
+    from {
+      height: calc(100vh - 17rem);
+    }
+    to {
+      height: calc(100vh - 26rem);
+    }
+  }
 `;
+
+interface StyledProps {
+  isInputFocused: boolean;
+}
 
 type Action = 'join' | 'exit' | 'wait' | 'errorExit' | '';
 
@@ -70,7 +101,7 @@ export default function Chat() {
   const [isMatching, setIsMatching] = useState(true);
   const [isInputDisable, setIsInputDisable] = useState(true);
   const [visible, setVisible] = useState(true);
-
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const prevAct = usePrevious(actionState);
   const timeoutRef = useRef<number | undefined>(undefined);
   const matchingTimeoutRef = useRef<number | undefined>(undefined);
@@ -299,9 +330,10 @@ export default function Chat() {
                 ? localStorage.getItem('avatar')
                 : '기타'
             }
+            isInputFocused={isInputFocused}
             key={'Avatars'}
           />
-          <Chattings ref={scrollRef}>
+          <Chattings ref={scrollRef} isInputFocused={isInputFocused}>
             {connected ? <ChatNotification type="connect" key="connect" /> : ''}
             {chattings.map((item: any, index: number) => (
               <>
@@ -337,6 +369,7 @@ export default function Chat() {
             disabled={isInputDisable}
             setChattings={setChattings}
             backgroundRef={backgroundRef}
+            setIsInputFocused={setIsInputFocused}
           />
         </ChatContainer>
         {isMatching ? <Loading clientCount={clientCount} /> : ''}
