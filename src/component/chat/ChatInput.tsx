@@ -9,13 +9,14 @@ import EmojiSelector from './EmojiSelector';
 const InputContainer = styled.div`
   padding: 1rem 2rem 2rem 2rem;
   position: relative;
+  z-index: 0;
 `;
 
 const EmojiDiv = styled.div`
   position: absolute;
   right: 6.7rem;
   top: 1.5rem;
-  z-index: 9999;
+  z-index: 1;
 `;
 const inputStyle = {
   width: '100%',
