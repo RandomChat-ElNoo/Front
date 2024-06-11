@@ -45,6 +45,7 @@ const avatarList = [
   { value: '코유키' },
   { value: '코코아' },
   { value: '쿄코' },
+  { value: '쿠로나츠' },
   { value: '키쿄' },
   { value: '티엔' },
   { value: '하카' },
