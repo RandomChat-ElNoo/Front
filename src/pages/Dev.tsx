@@ -41,7 +41,7 @@ const FlexContainer = styled.div`
   justify-content: end;
 `;
 
-export default function Developing() {
+export default function Dev() {
   return (
     <>
       <Background>
@@ -51,7 +51,7 @@ export default function Developing() {
               <img alt="배너이미지" src="/Imgs/titleOfRCsmall.svg" />
             </Banner>
           </FlexContainer>
-          <Text>더 나은 모습으로 찾아뵙겠습니다~</Text>
+          <Text>더나은 모습으로 찾아뵙겠습니다~</Text>
         </Container>
       </Background>
     </>
